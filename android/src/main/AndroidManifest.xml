@@ -23,8 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".OpenFileActivity" android:configChanges="orientation|keyboardHidden"
-                  android:theme="@style/NoTitleBar">
+        <activity android:name=".OpenFileActivity" android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
