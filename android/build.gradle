@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+apply plugin: 'de.felixschulze.gradle.spoon'
+
+android {
+
+    compileSdkVersion 24
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "org.ligi.materialkeepass"
+        minSdkVersion 9
+        targetSdkVersion 24
+        versionCode 1
+        versionName "0.1"
+
+        testApplicationId "org.ligi.materialkeepass.tests"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+
+    }
+
+    productFlavors {
+
+        dev {
+            minSdkVersion 21
+        }
+
+        prod {
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+}
+
+dependencies {
+    androidTestCompile 'junit:junit:4.12'
+
+    compile 'com.android.support:appcompat-v7:24.2.0'
+}

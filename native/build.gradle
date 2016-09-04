@@ -1,0 +1,45 @@
+apply plugin: 'com.android.model.native'
+
+model {
+    android {
+        compileSdkVersion = 24
+    }
+
+    android.sources {
+        main {
+            jni {
+                source {
+                    srcDirs = [
+                            "src/main/jni/aes",
+                            "src/main/jni/final_key",
+                            "src/main/jni/sha"
+                    ]
+                    exclude "**/aesxam.c"
+                    exclude "**/rfc3686.c"
+                    exclude "**/tablegen.c"
+                    exclude "**/pwd2key.c"
+                    exclude "**/sha1b.c"
+                    exclude "**/sha2b.c"
+                    exclude "**/shasum.c"
+                }
+            }
+        }
+    }
+
+    android.ndk {
+        moduleName = "libfinal-key"
+
+        ldLibs.add("log")
+        CFlags.add("-I${file("src/main/jni/aes")}".toString())
+        CFlags.add("-I${file("src/main/jni/sha")}".toString())
+        CFlags.add("-DUSE_SHA256")
+    }
+
+}
+
+task(copy, type: Copy) {
+    dependsOn assemble // trigger build
+    from 'build/outputs/native/release/lib'
+    into '../android/src/main/jniLibs/'
+}
+	    

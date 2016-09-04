@@ -4,7 +4,11 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle-experimental:0.7.0'
+    classpath 'com.android.tools.build:gradle:2.1.2'
+        
+	classpath 'com.android.tools.build:gradle-experimental:0.7.0'
+
+        classpath 'de.felixschulze.gradle:gradle-spoon-plugin:2.7.3'
     }
 }
 
