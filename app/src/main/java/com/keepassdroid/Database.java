@@ -45,8 +45,6 @@ import com.keepassdroid.database.exception.PwDbOutputException;
 import com.keepassdroid.database.load.Importer;
 import com.keepassdroid.database.load.ImporterFactory;
 import com.keepassdroid.database.save.PwDbOutput;
-import com.keepassdroid.icons.DrawableFactory;
-import com.keepassdroid.search.SearchDbHelper;
 import com.keepassdroid.utils.UriUtil;
 
 /**
@@ -56,11 +54,10 @@ public class Database {
     public Set<PwGroup> dirty = new HashSet<PwGroup>();
     public PwDatabase pm;
     public Uri mUri;
-    public SearchDbHelper searchHelper;
+
     public boolean readOnly = false;
     public boolean passwordEncodingError = false;
 
-    public DrawableFactory drawFactory = new DrawableFactory();
 
     private boolean loaded = false;
 
@@ -146,18 +143,7 @@ public class Database {
             passwordEncodingError = !pm.validatePasswordEncoding(password);
         }
 
-        searchHelper = new SearchDbHelper(ctx);
-
         loaded = true;
-    }
-
-    public PwGroup Search(String str) {
-        if (searchHelper == null) { return null; }
-
-        PwGroup group = searchHelper.search(this, str);
-
-        return group;
-
     }
 
     public void SaveData(Context ctx) throws IOException, PwDbOutputException {
@@ -210,7 +196,6 @@ public class Database {
 
     public void clear() {
         dirty.clear();
-        drawFactory.clear();
 
         pm = null;
         mUri = null;

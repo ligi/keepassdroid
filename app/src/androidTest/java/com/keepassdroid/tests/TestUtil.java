@@ -19,20 +19,19 @@
  */
 package com.keepassdroid.tests;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.net.Uri;
+import com.keepassdroid.utils.EmptyUtils;
+import com.keepassdroid.utils.UriUtil;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.net.Uri;
-
-import com.keepassdroid.utils.EmptyUtils;
-import com.keepassdroid.utils.UriUtil;
-
 public class TestUtil {
 	
-	public static void extractKey(Context ctx, String asset, String target) throws Exception {
+	public static void extractKey(Context ctx, String asset, File target) throws Exception {
 		
 		InputStream key = ctx.getAssets().open(asset, AssetManager.ACCESS_STREAMING);
 		

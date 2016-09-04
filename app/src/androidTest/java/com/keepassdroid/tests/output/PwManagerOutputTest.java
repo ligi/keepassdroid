@@ -18,20 +18,9 @@
 *
 */
 package com.keepassdroid.tests.output;
- 
-import static org.junit.Assert.assertArrayEquals;
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import android.content.res.AssetManager;
 import android.test.AndroidTestCase;
-
 import com.keepassdroid.database.PwDatabaseV3Debug;
 import com.keepassdroid.database.PwDbHeader;
 import com.keepassdroid.database.PwDbHeaderV3;
@@ -41,6 +30,15 @@ import com.keepassdroid.database.save.PwDbV3Output;
 import com.keepassdroid.database.save.PwDbV3OutputDebug;
 import com.keepassdroid.stream.NullOutputStream;
 import com.keepassdroid.tests.database.TestData;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import static org.junit.Assert.assertArrayEquals;
  
 public class PwManagerOutputTest extends AndroidTestCase {
   PwDatabaseV3Debug mPM;
@@ -136,7 +134,7 @@ public class PwManagerOutputTest extends AndroidTestCase {
 	pActual.output();
 	//pActual.close();
 
-	FileOutputStream fos = new FileOutputStream("/sdcard/test1_out.kdb");
+	FileOutputStream fos = new FileOutputStream(new File(getContext().getFilesDir(),"/test1_out.kdb"));
 	fos.write(bActual.toByteArray());
 	fos.close();
 	assertArrayEquals("Databases do not match.", bExpected.toByteArray(), bActual.toByteArray());

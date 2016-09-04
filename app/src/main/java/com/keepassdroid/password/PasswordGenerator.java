@@ -19,11 +19,10 @@
  */
 package com.keepassdroid.password;
 
-import java.security.SecureRandom;
-
 import android.content.Context;
+import java.security.SecureRandom;
+import org.ligi.materialkeepass.R;
 
-import com.android.keepass.R;
 
 public class PasswordGenerator {
 	private static final String upperCaseChars	= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

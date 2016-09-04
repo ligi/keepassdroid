@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.keepassdroid.app.App;
 import com.keepassdroid.utils.Types;
 
 /** Converting from the C Date format to the Java data format is
@@ -85,7 +84,7 @@ public class PwDate implements Cloneable {
 	
 	public Date getJDate() {
 		if ( ! jDateBuilt ) {
-			jDate = readTime(cDate, 0, App.getCalendar());
+		    jDate = readTime(cDate, 0, Calendar.getInstance());
 			jDateBuilt = true;
 		}
 		
@@ -94,7 +93,7 @@ public class PwDate implements Cloneable {
 	
 	public byte[] getCDate() {
 		if ( ! cDateBuilt ) {
-			cDate = writeTime(jDate, App.getCalendar());
+			cDate = writeTime(jDate, Calendar.getInstance());
 			cDateBuilt = true;
 		}
 		

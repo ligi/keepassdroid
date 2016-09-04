@@ -21,24 +21,18 @@ package com.keepassdroid.tests.database;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.net.Uri;
-import android.os.Environment;
 import android.test.AndroidTestCase;
-
 import com.keepassdroid.database.load.ImporterV3;
 import com.keepassdroid.tests.TestUtil;
-import com.keepassdroid.utils.UriUtil;
-
-import java.io.InputStream;
 import java.io.File;
+import java.io.InputStream;
 
 public class Kdb3 extends AndroidTestCase {
 	
 	private void testKeyfile(String dbAsset, String keyAsset, String password) throws Exception {
 		Context ctx = getContext();
 
-		File sdcard = Environment.getExternalStorageDirectory();
-		String keyPath = sdcard.getAbsolutePath() + "/key";
+		File keyPath = new File(ctx.getFilesDir() , "key");
 		
 		TestUtil.extractKey(ctx, keyAsset, keyPath);
 		
@@ -46,7 +40,7 @@ public class Kdb3 extends AndroidTestCase {
 		InputStream is = am.open(dbAsset, AssetManager.ACCESS_STREAMING);
 		
 		ImporterV3 importer = new ImporterV3();
-		importer.openDatabase(is, password, TestUtil.getKeyFileInputStream(ctx, keyPath));
+		importer.openDatabase(is, password, TestUtil.getKeyFileInputStream(ctx, keyPath.getAbsolutePath()));
 		
 		is.close();
 	}

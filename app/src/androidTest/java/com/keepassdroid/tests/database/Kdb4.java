@@ -19,16 +19,9 @@
  */
 package com.keepassdroid.tests.database;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.test.AndroidTestCase;
-
 import com.keepassdroid.database.PwDatabaseV4;
 import com.keepassdroid.database.exception.InvalidDBException;
 import com.keepassdroid.database.exception.PwDbOutputException;
@@ -39,6 +32,12 @@ import com.keepassdroid.database.save.PwDbOutput;
 import com.keepassdroid.database.save.PwDbV4Output;
 import com.keepassdroid.stream.CopyInputStream;
 import com.keepassdroid.tests.TestUtil;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Kdb4 extends AndroidTestCase {
 
@@ -86,7 +85,7 @@ public class Kdb4 extends AndroidTestCase {
 
         byte[] data = bos.toByteArray();
 
-        FileOutputStream fos = new FileOutputStream("/sdcard/test-out.kdbx", false);
+        FileOutputStream fos = new FileOutputStream(getContext().getFilesDir()+"/test-out.kdbx", false);
 
         InputStream bis = new ByteArrayInputStream(data);
         bis = new CopyInputStream(bis, fos);
@@ -102,8 +101,8 @@ public class Kdb4 extends AndroidTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        TestUtil.extractKey(getContext(), "keyfile.key", "/sdcard/key");
-        TestUtil.extractKey(getContext(), "binary.key", "/sdcard/key-binary");
+        TestUtil.extractKey(getContext(), "keyfile.key", new File(getContext().getFilesDir(), "key"));
+        TestUtil.extractKey(getContext(), "binary.key", new File(getContext().getFilesDir(),"key-binary"));
     }
 
     public void testComposite() throws IOException, InvalidDBException {
@@ -113,7 +112,7 @@ public class Kdb4 extends AndroidTestCase {
         InputStream is = am.open("keyfile.kdbx", AssetManager.ACCESS_STREAMING);
 
         ImporterV4 importer = new ImporterV4();
-        importer.openDatabase(is, "12345", TestUtil.getKeyFileInputStream(ctx,"/sdcard/key"));
+        importer.openDatabase(is, "12345", TestUtil.getKeyFileInputStream(ctx,getContext().getFilesDir()+"/key"));
 
         is.close();
 
@@ -126,7 +125,7 @@ public class Kdb4 extends AndroidTestCase {
         InputStream is = am.open("keyfile-binary.kdbx", AssetManager.ACCESS_STREAMING);
 
         ImporterV4 importer = new ImporterV4();
-        importer.openDatabase(is, "12345", TestUtil.getKeyFileInputStream(ctx,"/sdcard/key-binary"));
+        importer.openDatabase(is, "12345", TestUtil.getKeyFileInputStream(ctx,getContext().getFilesDir()+"/key-binary"));
 
         is.close();
 
@@ -139,7 +138,7 @@ public class Kdb4 extends AndroidTestCase {
         InputStream is = am.open("key-only.kdbx", AssetManager.ACCESS_STREAMING);
 
         ImporterV4 importer = new ImporterV4();
-        importer.openDatabase(is, "", TestUtil.getKeyFileInputStream(ctx, "/sdcard/key"));
+        importer.openDatabase(is, "", TestUtil.getKeyFileInputStream(ctx,getContext().getFilesDir()+"/key"));
 
         is.close();
 
