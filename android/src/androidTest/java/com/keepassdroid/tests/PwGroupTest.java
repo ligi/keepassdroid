@@ -20,12 +20,11 @@
 package com.keepassdroid.tests;
 
 
-import android.test.AndroidTestCase;
-
+import android.test.InstrumentationTestCase;
 import com.keepassdroid.database.PwGroupV3;
 import com.keepassdroid.tests.database.TestData;
 
-public class PwGroupTest extends AndroidTestCase {
+public class PwGroupTest extends InstrumentationTestCase {
 
 	PwGroupV3 mPG;
 	
@@ -33,7 +32,7 @@ public class PwGroupTest extends AndroidTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		mPG = (PwGroupV3) TestData.GetTest1(getContext()).getGroups().get(0);
+		mPG = (PwGroupV3) TestData.GetTest1(getInstrumentation().getContext()).getGroups().get(0);
 		
 	}
 	

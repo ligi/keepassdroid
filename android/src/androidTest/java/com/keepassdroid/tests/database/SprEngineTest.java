@@ -19,6 +19,7 @@
  */
 package com.keepassdroid.tests.database;
 
+import android.test.InstrumentationTestCase;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ import com.keepassdroid.database.load.ImporterV4;
 import com.keepassdroid.utils.SprEngine;
 import com.keepassdroid.utils.Types;
 
-public class SprEngineTest extends AndroidTestCase {
+public class SprEngineTest extends InstrumentationTestCase {
 	private PwDatabaseV4 db;
 	private SprEngine spr;
 	
@@ -41,7 +42,7 @@ public class SprEngineTest extends AndroidTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		Context ctx = getContext();
+		Context ctx = getInstrumentation().getContext();
 		
 		AssetManager am = ctx.getAssets();
 		InputStream is = am.open("test.kdbx", AssetManager.ACCESS_STREAMING);

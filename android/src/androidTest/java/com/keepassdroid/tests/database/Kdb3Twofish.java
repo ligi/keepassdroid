@@ -19,19 +19,17 @@
  */
 package com.keepassdroid.tests.database;
 
-import java.io.InputStream;
-
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.test.AndroidTestCase;
-
+import android.test.InstrumentationTestCase;
 import com.keepassdroid.database.PwDatabaseV3;
 import com.keepassdroid.database.PwEncryptionAlgorithm;
 import com.keepassdroid.database.load.ImporterV3;
+import java.io.InputStream;
 
-public class Kdb3Twofish extends AndroidTestCase {
+public class Kdb3Twofish extends InstrumentationTestCase {
 	public void testReadTwofish() throws Exception {
-		Context ctx = getContext();
+		Context ctx = getInstrumentation().getContext();
 		
 		AssetManager am = ctx.getAssets();
 		InputStream is = am.open("twofish.kdb", AssetManager.ACCESS_STREAMING);
