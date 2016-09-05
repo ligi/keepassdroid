@@ -19,17 +19,14 @@
  */
 package com.keepassdroid.tests;
 
+import android.test.suitebuilder.TestSuiteBuilder;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import android.test.suitebuilder.TestSuiteBuilder;
-
 public class OutputTests extends TestSuite {
 
-	public static Test suite() {
+    public static Test suite() {
 
-		return new TestSuiteBuilder(AllTests.class)
-		.includePackages("com.keepassdroid.tests.output")
-		.build();
-	}
+        return new TestSuiteBuilder(AllTests.class).includePackages("com.keepassdroid.tests.output").build();
+    }
 }

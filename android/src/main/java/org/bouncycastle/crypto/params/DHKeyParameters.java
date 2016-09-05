@@ -1,54 +1,40 @@
 package org.bouncycastle.crypto.params;
 
 
-public class DHKeyParameters
-    extends AsymmetricKeyParameter
-{
-    private DHParameters    params;
+public class DHKeyParameters extends AsymmetricKeyParameter {
+    private DHParameters params;
 
-    protected DHKeyParameters(
-        boolean         isPrivate,
-        DHParameters    params)
-    {
+    protected DHKeyParameters(boolean isPrivate, DHParameters params) {
         super(isPrivate);
 
         this.params = params;
-    }   
+    }
 
-    public DHParameters getParameters()
-    {
+    public DHParameters getParameters() {
         return params;
     }
 
-    public boolean equals(
-        Object  obj)
-    {
-        if (!(obj instanceof DHKeyParameters))
-        {
+    public boolean equals(Object obj) {
+        if (!(obj instanceof DHKeyParameters)) {
             return false;
         }
 
-        DHKeyParameters    dhKey = (DHKeyParameters)obj;
+        DHKeyParameters dhKey = (DHKeyParameters) obj;
 
-        if (params == null)
-        {
+        if (params == null) {
             return dhKey.getParameters() == null;
-        }
-        else
-        { 
+        } else {
             return params.equals(dhKey.getParameters());
         }
     }
-    
-    public int hashCode()
-    {
+
+    public int hashCode() {
         int code = isPrivate() ? 0 : 1;
-        
-        if (params != null)
-        {
+
+        if (params != null) {
             code ^= params.hashCode();
         }
-        
+
         return code;
     }
 }

@@ -23,48 +23,46 @@ import java.util.Date;
 import java.util.UUID;
 
 public class PwDeletedObject {
-	public UUID uuid;
-	private Date deletionTime;
-	
-	public PwDeletedObject() {
-		
-	}
-	
-	public PwDeletedObject(UUID u) {
-		this(u, new Date());
-	}
-	
-	public PwDeletedObject(UUID u, Date d) {
-		uuid = u;
-		deletionTime = d;
-	}
-	
-	public Date getDeletionTime() {
-		if ( deletionTime == null ) {
-			return new Date(System.currentTimeMillis());
-		}
-		
-		return deletionTime;
-	}
-	
-	public void setDeletionTime(Date date) {
-		deletionTime = date;
-	}
+    public UUID uuid;
+    private Date deletionTime;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		else if (o == null) {
-			return false;
-		}
-		else if (!(o instanceof PwDeletedObject)) {
-			return false;
-		}
-		
-		PwDeletedObject rhs = (PwDeletedObject) o;
-		
-		return uuid.equals(rhs.uuid);
-	}
+    public PwDeletedObject() {
+
+    }
+
+    public PwDeletedObject(UUID u) {
+        this(u, new Date());
+    }
+
+    public PwDeletedObject(UUID u, Date d) {
+        uuid = u;
+        deletionTime = d;
+    }
+
+    public Date getDeletionTime() {
+        if (deletionTime == null) {
+            return new Date(System.currentTimeMillis());
+        }
+
+        return deletionTime;
+    }
+
+    public void setDeletionTime(Date date) {
+        deletionTime = date;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (o == null) {
+            return false;
+        } else if (!(o instanceof PwDeletedObject)) {
+            return false;
+        }
+
+        PwDeletedObject rhs = (PwDeletedObject) o;
+
+        return uuid.equals(rhs.uuid);
+    }
 }

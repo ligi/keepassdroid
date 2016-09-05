@@ -19,20 +19,19 @@
  */
 package com.keepassdroid.tests;
 
+import com.keepassdroid.database.PwDate;
 import junit.framework.TestCase;
 
-import com.keepassdroid.database.PwDate;
-
 public class PwDateTest extends TestCase {
-	public void testDate() {
-		PwDate jDate = new PwDate(System.currentTimeMillis());
-		
-		PwDate intermediate = (PwDate) jDate.clone();
-		
-		PwDate cDate = new PwDate(intermediate.getCDate(), 0);
-		
-		assertTrue("jDate and intermediate not equal", jDate.equals(intermediate));
-		assertTrue("jDate and cDate not equal", cDate.equals(jDate));
-		
-	}
+    public void testDate() {
+        PwDate jDate = new PwDate(System.currentTimeMillis());
+
+        PwDate intermediate = (PwDate) jDate.clone();
+
+        PwDate cDate = new PwDate(intermediate.getCDate(), 0);
+
+        assertTrue("jDate and intermediate not equal", jDate.equals(intermediate));
+        assertTrue("jDate and cDate not equal", cDate.equals(jDate));
+
+    }
 }

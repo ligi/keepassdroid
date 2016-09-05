@@ -20,14 +20,14 @@ import java.util.Iterator;
 
 /**
  * Defines an iterator that operates over a <code>Map</code>.
- * <p>
+ * <p/>
  * This iterator is a special version designed for maps. It can be more
  * efficient to use this rather than an entry set iterator where the option
  * is available, and it is certainly more convenient.
- * <p>
+ * <p/>
  * A map that provides this interface may not hold the data internally using
  * Map Entry objects, thus this interface can avoid lots of object creation.
- * <p>
+ * <p/>
  * In use, this iterator iterates through the keys in the map. After each call
  * to <code>next()</code>, the <code>getValue()</code> method provides direct
  * access to the value. The value can also be set using <code>setValue()</code>.
@@ -39,14 +39,13 @@ import java.util.Iterator;
  *   it.setValue(newValue);
  * }
  * </pre>
- *  
- * @since Commons Collections 3.0
- * @version $Revision: 646777 $ $Date: 2008-04-10 13:33:15 +0100 (Thu, 10 Apr 2008) $
  *
  * @author Stephen Colebourne
+ * @version $Revision: 646777 $ $Date: 2008-04-10 13:33:15 +0100 (Thu, 10 Apr 2008) $
+ * @since Commons Collections 3.0
  */
 public interface MapIterator extends Iterator {
-    
+
     /**
      * Checks to see if there are more entries still to be iterated.
      *
@@ -63,6 +62,7 @@ public interface MapIterator extends Iterator {
     Object next();
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the current key, which is the key returned by the last call
      * to <code>next()</code>.
@@ -82,27 +82,28 @@ public interface MapIterator extends Iterator {
     Object getValue();
 
     //-----------------------------------------------------------------------
+
     /**
      * Removes the last returned key from the underlying <code>Map</code> (optional operation).
-     * <p>
+     * <p/>
      * This method can be called once per call to <code>next()</code>.
      *
      * @throws UnsupportedOperationException if remove is not supported by the map
-     * @throws IllegalStateException if <code>next()</code> has not yet been called
-     * @throws IllegalStateException if <code>remove()</code> has already been called
-     *  since the last call to <code>next()</code>
+     * @throws IllegalStateException         if <code>next()</code> has not yet been called
+     * @throws IllegalStateException         if <code>remove()</code> has already been called
+     *                                       since the last call to <code>next()</code>
      */
     void remove();
-    
+
     /**
      * Sets the value associated with the current key (optional operation).
      *
-     * @param value  the new value
+     * @param value the new value
      * @return the previous value
      * @throws UnsupportedOperationException if setValue is not supported by the map
-     * @throws IllegalStateException if <code>next()</code> has not yet been called
-     * @throws IllegalStateException if <code>remove()</code> has been called since the
-     *  last call to <code>next()</code>
+     * @throws IllegalStateException         if <code>next()</code> has not yet been called
+     * @throws IllegalStateException         if <code>remove()</code> has been called since the
+     *                                       last call to <code>next()</code>
      */
     Object setValue(Object value);
 

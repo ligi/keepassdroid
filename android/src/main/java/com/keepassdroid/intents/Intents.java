@@ -16,13 +16,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with KeePassDroid.  If not, see <http://www.gnu.org/licenses/>.
  *
- */package com.keepassdroid.intents;
+ */
+package com.keepassdroid.intents;
 
 public class Intents {
-	public static final String TIMEOUT = "com.keepassdroid.timeout";
-	
-	public static final String COPY_USERNAME = "com.keepassdroid.copy_username";
-	public static final String COPY_PASSWORD = "com.keepassdroid.copy_password";
+    public static final String TIMEOUT = "com.keepassdroid.timeout";
 
-	public static final String OPEN_INTENTS_FILE_BROWSE = "org.openintents.action.PICK_FILE";
+    public static final String COPY_USERNAME = "com.keepassdroid.copy_username";
+    public static final String COPY_PASSWORD = "com.keepassdroid.copy_password";
+
+    public static final String OPEN_INTENTS_FILE_BROWSE = "org.openintents.action.PICK_FILE";
 }

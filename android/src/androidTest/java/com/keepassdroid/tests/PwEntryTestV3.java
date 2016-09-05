@@ -27,33 +27,33 @@ import java.util.Calendar;
 import static org.junit.Assert.assertArrayEquals;
 
 public class PwEntryTestV3 extends InstrumentationTestCase {
-	PwEntryV3 mPE;
-	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		mPE = (PwEntryV3) TestData.GetTest1(getInstrumentation().getContext()).entries.get(0);
-		
-	}
-	
-	public void testName() {
-		assertTrue("Name was " + mPE.title, mPE.title.equals("Amazon"));
-	}
-	
-	public void testPassword() throws UnsupportedEncodingException {
-		String sPass = "12345";
-		byte[] password = sPass.getBytes("UTF-8");
-		
-		assertArrayEquals(password, mPE.getPasswordBytes());
-	}
-	
-	public void testCreation() {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(mPE.tCreation.getJDate());
-		
-		assertEquals("Incorrect year.", cal.get(Calendar.YEAR), 2009);
-		assertEquals("Incorrect month.", cal.get(Calendar.MONTH), 3);
-		assertEquals("Incorrect day.", cal.get(Calendar.DAY_OF_MONTH), 23);
-	}
+    PwEntryV3 mPE;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        mPE = (PwEntryV3) TestData.GetTest1(getInstrumentation().getContext()).entries.get(0);
+
+    }
+
+    public void testName() {
+        assertTrue("Name was " + mPE.title, mPE.title.equals("Amazon"));
+    }
+
+    public void testPassword() throws UnsupportedEncodingException {
+        String sPass = "12345";
+        byte[] password = sPass.getBytes("UTF-8");
+
+        assertArrayEquals(password, mPE.getPasswordBytes());
+    }
+
+    public void testCreation() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(mPE.tCreation.getJDate());
+
+        assertEquals("Incorrect year.", cal.get(Calendar.YEAR), 2009);
+        assertEquals("Incorrect month.", cal.get(Calendar.MONTH), 3);
+        assertEquals("Incorrect day.", cal.get(Calendar.DAY_OF_MONTH), 23);
+    }
 }

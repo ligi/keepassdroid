@@ -5,14 +5,11 @@ package org.bouncycastle.crypto;
  * message.
  */
 @SuppressWarnings("serial")
-public class InvalidCipherTextException 
-    extends CryptoException
-{
+public class InvalidCipherTextException extends CryptoException {
     /**
      * base constructor.
      */
-    public InvalidCipherTextException()
-    {
+    public InvalidCipherTextException() {
     }
 
     /**
@@ -20,9 +17,7 @@ public class InvalidCipherTextException
      *
      * @param message the message to be carried with the exception.
      */
-    public InvalidCipherTextException(
-        String  message)
-    {
+    public InvalidCipherTextException(String message) {
         super(message);
     }
 }

@@ -25,214 +25,214 @@ import java.util.UUID;
 
 public class PwGroupV4 extends PwGroup implements ITimeLogger {
 
-	//public static final int FOLDER_ICON = 48;
-	public static final boolean DEFAULT_SEARCHING_ENABLED = true;
-	
-	public PwGroupV4 parent = null;
-	public UUID uuid = PwDatabaseV4.UUID_ZERO;
-	public String notes = "";
-	public PwIconCustom customIcon = PwIconCustom.ZERO;
-	public boolean isExpanded = true;
-	public String defaultAutoTypeSequence = "";
-	public Boolean enableAutoType = null;
-	public Boolean enableSearching = null;
-	public UUID lastTopVisibleEntry = PwDatabaseV4.UUID_ZERO;
-	private Date parentGroupLastMod = PwDatabaseV4.DEFAULT_NOW;
-	private Date creation = PwDatabaseV4.DEFAULT_NOW;
-	private Date lastMod = PwDatabaseV4.DEFAULT_NOW;
-	private Date lastAccess = PwDatabaseV4.DEFAULT_NOW;
-	private Date expireDate = PwDatabaseV4.DEFAULT_NOW;
-	private boolean expires = false;
-	private long usageCount = 0;
+    //public static final int FOLDER_ICON = 48;
+    public static final boolean DEFAULT_SEARCHING_ENABLED = true;
 
-	public PwGroupV4() {
-		
-	}
-	
-	public PwGroupV4(boolean createUUID, boolean setTimes, String name, PwIconStandard icon) {
-		if (createUUID) {
-			uuid = UUID.randomUUID();
-		}
-		
-		if (setTimes) {
-			creation = lastMod = lastAccess = new Date();
-		}
-		
-		this.name = name;
-		this.icon = icon;
-	}
-	
-	public void AddGroup(PwGroupV4 subGroup, boolean takeOwnership) {
-		AddGroup(subGroup, takeOwnership, false);
-	}
-	
-	public void AddGroup(PwGroupV4 subGroup, boolean takeOwnership, boolean updateLocationChanged) {
-		if ( subGroup == null ) throw new RuntimeException("subGroup");
-		
-		childGroups.add(subGroup);
-		
-		if ( takeOwnership ) subGroup.parent = this;
-		
-		if ( updateLocationChanged ) subGroup.parentGroupLastMod = new Date(System.currentTimeMillis());
-		
-	}
-	
-	public void AddEntry(PwEntryV4 pe, boolean takeOwnership) {
-		AddEntry(pe, takeOwnership, false);
-	}
-	
-	public void AddEntry(PwEntryV4 pe, boolean takeOwnership, boolean updateLocationChanged) {
-		assert(pe != null);
-		
-		childEntries.add(pe);
-		
-		if ( takeOwnership ) pe.parent = this;
-		
-		if ( updateLocationChanged ) pe.setLocationChanged(new Date(System.currentTimeMillis()));
-	}
-	
-	@Override
-	public PwGroup getParent() {
-		return parent;
-	}
-	
-	public void buildChildGroupsRecursive(List<PwGroup> list) {
-		list.add(this);
-		
-		for ( int i = 0; i < childGroups.size(); i++) {
-			PwGroupV4 child = (PwGroupV4) childGroups.get(i);
-			child.buildChildGroupsRecursive(list);
-			
-		}
-	}
+    public PwGroupV4 parent = null;
+    public UUID uuid = PwDatabaseV4.UUID_ZERO;
+    public String notes = "";
+    public PwIconCustom customIcon = PwIconCustom.ZERO;
+    public boolean isExpanded = true;
+    public String defaultAutoTypeSequence = "";
+    public Boolean enableAutoType = null;
+    public Boolean enableSearching = null;
+    public UUID lastTopVisibleEntry = PwDatabaseV4.UUID_ZERO;
+    private Date parentGroupLastMod = PwDatabaseV4.DEFAULT_NOW;
+    private Date creation = PwDatabaseV4.DEFAULT_NOW;
+    private Date lastMod = PwDatabaseV4.DEFAULT_NOW;
+    private Date lastAccess = PwDatabaseV4.DEFAULT_NOW;
+    private Date expireDate = PwDatabaseV4.DEFAULT_NOW;
+    private boolean expires = false;
+    private long usageCount = 0;
 
-	public void buildChildEntriesRecursive(List<PwEntry> list) {
-		for ( int i = 0; i < childEntries.size(); i++ ) {
-			list.add(childEntries.get(i));
-		}
-		
-		for ( int i = 0; i < childGroups.size(); i++ ) {
-			PwGroupV4 child = (PwGroupV4) childGroups.get(i);
-			child.buildChildEntriesRecursive(list);
-		}
-		
-	}
+    public PwGroupV4() {
 
-	@Override
-	public PwGroupId getId() {
-		return new PwGroupIdV4(uuid);
-	}
+    }
 
-	@Override
-	public void setId(PwGroupId id) {
-		PwGroupIdV4 id4 = (PwGroupIdV4) id;
-		uuid = id4.getId();
-	}
+    public PwGroupV4(boolean createUUID, boolean setTimes, String name, PwIconStandard icon) {
+        if (createUUID) {
+            uuid = UUID.randomUUID();
+        }
 
-	@Override
-	public String getName() {
-		return name;
-	}
+        if (setTimes) {
+            creation = lastMod = lastAccess = new Date();
+        }
 
-	@Override
-	public Date getLastMod() {
-		return parentGroupLastMod;
-	}
+        this.name = name;
+        this.icon = icon;
+    }
 
-	public Date getCreationTime() {
-		return creation;
-	}
+    public void AddGroup(PwGroupV4 subGroup, boolean takeOwnership) {
+        AddGroup(subGroup, takeOwnership, false);
+    }
 
-	public Date getExpiryTime() {
-		return expireDate;
-	}
+    public void AddGroup(PwGroupV4 subGroup, boolean takeOwnership, boolean updateLocationChanged) {
+        if (subGroup == null) throw new RuntimeException("subGroup");
 
-	public Date getLastAccessTime() {
-		return lastAccess;
-	}
+        childGroups.add(subGroup);
 
-	public Date getLastModificationTime() {
-		return lastMod;
-	}
+        if (takeOwnership) subGroup.parent = this;
 
-	public Date getLocationChanged() {
-		return parentGroupLastMod;
-	}
+        if (updateLocationChanged) subGroup.parentGroupLastMod = new Date(System.currentTimeMillis());
 
-	public long getUsageCount() {
-		return usageCount;
-	}
+    }
 
-	public void setCreationTime(Date date) {
-		creation = date;
-		
-	}
+    public void AddEntry(PwEntryV4 pe, boolean takeOwnership) {
+        AddEntry(pe, takeOwnership, false);
+    }
 
-	public void setExpiryTime(Date date) {
-		expireDate = date;
-	}
+    public void AddEntry(PwEntryV4 pe, boolean takeOwnership, boolean updateLocationChanged) {
+        assert (pe != null);
 
-	@Override
-	public void setLastAccessTime(Date date) {
-		lastAccess = date;
-	}
+        childEntries.add(pe);
 
-	@Override
-	public void setLastModificationTime(Date date) {
-		lastMod = date;
-	}
+        if (takeOwnership) pe.parent = this;
 
-	public void setLocationChanged(Date date) {
-		parentGroupLastMod = date;
-	}
+        if (updateLocationChanged) pe.setLocationChanged(new Date(System.currentTimeMillis()));
+    }
 
-	public void setUsageCount(long count) {
-		usageCount = count;
-	}
+    @Override
+    public PwGroup getParent() {
+        return parent;
+    }
 
-	public boolean expires() {
-		return expires;
-	}
+    @Override
+    public void setParent(PwGroup prt) {
+        parent = (PwGroupV4) prt;
 
-	public void setExpires(boolean exp) {
-		expires = exp;
-	}
+    }
 
-	@Override
-	public void setParent(PwGroup prt) {
-		parent = (PwGroupV4) prt;
-		
-	}
+    public void buildChildGroupsRecursive(List<PwGroup> list) {
+        list.add(this);
 
-	@Override
-	public PwIcon getIcon() {
-		if (customIcon == null || customIcon.uuid.equals(PwDatabaseV4.UUID_ZERO)) {
-			return super.getIcon();
-		} else {
-			return customIcon;
-		}
-	}
-	
-	@Override
-	public void initNewGroup(String nm, PwGroupId newId) {
-		super.initNewGroup(nm, newId);
-		
-		lastAccess = lastMod = creation = parentGroupLastMod = new Date();
-	}
-	
-	public boolean isSearchEnabled() {
-		PwGroupV4 group = this;
-		while (group != null) {
-			Boolean search = group.enableSearching;
-			if (search != null) {
-				return search;
-			}
-			
-			group = group.parent;
-		}
-		
-		// If we get to the root group and its null, default to true
-		return true;
-	}
+        for (int i = 0; i < childGroups.size(); i++) {
+            PwGroupV4 child = (PwGroupV4) childGroups.get(i);
+            child.buildChildGroupsRecursive(list);
+
+        }
+    }
+
+    public void buildChildEntriesRecursive(List<PwEntry> list) {
+        for (int i = 0; i < childEntries.size(); i++) {
+            list.add(childEntries.get(i));
+        }
+
+        for (int i = 0; i < childGroups.size(); i++) {
+            PwGroupV4 child = (PwGroupV4) childGroups.get(i);
+            child.buildChildEntriesRecursive(list);
+        }
+
+    }
+
+    @Override
+    public PwGroupId getId() {
+        return new PwGroupIdV4(uuid);
+    }
+
+    @Override
+    public void setId(PwGroupId id) {
+        PwGroupIdV4 id4 = (PwGroupIdV4) id;
+        uuid = id4.getId();
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Date getLastMod() {
+        return parentGroupLastMod;
+    }
+
+    public Date getCreationTime() {
+        return creation;
+    }
+
+    public void setCreationTime(Date date) {
+        creation = date;
+
+    }
+
+    public Date getExpiryTime() {
+        return expireDate;
+    }
+
+    public void setExpiryTime(Date date) {
+        expireDate = date;
+    }
+
+    public Date getLastAccessTime() {
+        return lastAccess;
+    }
+
+    @Override
+    public void setLastAccessTime(Date date) {
+        lastAccess = date;
+    }
+
+    public Date getLastModificationTime() {
+        return lastMod;
+    }
+
+    @Override
+    public void setLastModificationTime(Date date) {
+        lastMod = date;
+    }
+
+    public Date getLocationChanged() {
+        return parentGroupLastMod;
+    }
+
+    public void setLocationChanged(Date date) {
+        parentGroupLastMod = date;
+    }
+
+    public long getUsageCount() {
+        return usageCount;
+    }
+
+    public void setUsageCount(long count) {
+        usageCount = count;
+    }
+
+    public boolean expires() {
+        return expires;
+    }
+
+    public void setExpires(boolean exp) {
+        expires = exp;
+    }
+
+    @Override
+    public PwIcon getIcon() {
+        if (customIcon == null || customIcon.uuid.equals(PwDatabaseV4.UUID_ZERO)) {
+            return super.getIcon();
+        } else {
+            return customIcon;
+        }
+    }
+
+    @Override
+    public void initNewGroup(String nm, PwGroupId newId) {
+        super.initNewGroup(nm, newId);
+
+        lastAccess = lastMod = creation = parentGroupLastMod = new Date();
+    }
+
+    public boolean isSearchEnabled() {
+        PwGroupV4 group = this;
+        while (group != null) {
+            Boolean search = group.enableSearching;
+            if (search != null) {
+                return search;
+            }
+
+            group = group.parent;
+        }
+
+        // If we get to the root group and its null, default to true
+        return true;
+    }
 
 }

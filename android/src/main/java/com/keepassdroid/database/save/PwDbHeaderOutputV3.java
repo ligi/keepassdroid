@@ -19,49 +19,47 @@
  */
 package com.keepassdroid.database.save;
 
+import com.keepassdroid.database.PwDbHeaderV3;
+import com.keepassdroid.stream.LEDataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
-import com.keepassdroid.database.PwDbHeaderV3;
-import com.keepassdroid.stream.LEDataOutputStream;
-
 public class PwDbHeaderOutputV3 {
-	private PwDbHeaderV3 mHeader;
-	private OutputStream mOS;
-	
-	public PwDbHeaderOutputV3(PwDbHeaderV3 header, OutputStream os) {
-		mHeader = header;
-		mOS = os;
-	}
-	
-	public void outputStart() throws IOException {
-		mOS.write(LEDataOutputStream.writeIntBuf(mHeader.signature1));
-		mOS.write(LEDataOutputStream.writeIntBuf(mHeader.signature2));
-		mOS.write(LEDataOutputStream.writeIntBuf(mHeader.flags));
-		mOS.write(LEDataOutputStream.writeIntBuf(mHeader.version));
-		mOS.write(mHeader.masterSeed);
-		mOS.write(mHeader.encryptionIV);
-		mOS.write(LEDataOutputStream.writeIntBuf(mHeader.numGroups));
-		mOS.write(LEDataOutputStream.writeIntBuf(mHeader.numEntries));
-	}
-	
-	public void outputContentHash() throws IOException {
-		mOS.write(mHeader.contentsHash);
-	}
-	
-	public void outputEnd() throws IOException {
-		mOS.write(mHeader.transformSeed);
-		mOS.write(LEDataOutputStream.writeIntBuf(mHeader.numKeyEncRounds));
-	}
-	
-	public void output() throws IOException {
-		outputStart();
-		outputContentHash();
-		outputEnd();
-	}
-	
-	public void close() throws IOException {
-		mOS.close();
-	}
+    private PwDbHeaderV3 mHeader;
+    private OutputStream mOS;
+
+    public PwDbHeaderOutputV3(PwDbHeaderV3 header, OutputStream os) {
+        mHeader = header;
+        mOS = os;
+    }
+
+    public void outputStart() throws IOException {
+        mOS.write(LEDataOutputStream.writeIntBuf(mHeader.signature1));
+        mOS.write(LEDataOutputStream.writeIntBuf(mHeader.signature2));
+        mOS.write(LEDataOutputStream.writeIntBuf(mHeader.flags));
+        mOS.write(LEDataOutputStream.writeIntBuf(mHeader.version));
+        mOS.write(mHeader.masterSeed);
+        mOS.write(mHeader.encryptionIV);
+        mOS.write(LEDataOutputStream.writeIntBuf(mHeader.numGroups));
+        mOS.write(LEDataOutputStream.writeIntBuf(mHeader.numEntries));
+    }
+
+    public void outputContentHash() throws IOException {
+        mOS.write(mHeader.contentsHash);
+    }
+
+    public void outputEnd() throws IOException {
+        mOS.write(mHeader.transformSeed);
+        mOS.write(LEDataOutputStream.writeIntBuf(mHeader.numKeyEncRounds));
+    }
+
+    public void output() throws IOException {
+        outputStart();
+        outputContentHash();
+        outputEnd();
+    }
+
+    public void close() throws IOException {
+        mOS.close();
+    }
 }

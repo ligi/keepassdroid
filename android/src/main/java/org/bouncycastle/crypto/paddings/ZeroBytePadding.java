@@ -1,23 +1,18 @@
 package org.bouncycastle.crypto.paddings;
 
 import java.security.SecureRandom;
-
 import org.bouncycastle.crypto.InvalidCipherTextException;
 
 /**
  * A padder that adds NULL byte padding to a block.
  */
-public class ZeroBytePadding
-    implements BlockCipherPadding
-{
+public class ZeroBytePadding implements BlockCipherPadding {
     /**
      * Initialise the padder.
      *
      * @param random - a SecureRandom if available.
      */
-    public void init(SecureRandom random)
-        throws IllegalArgumentException
-    {
+    public void init(SecureRandom random) throws IllegalArgumentException {
         // nothing to do.
     }
 
@@ -26,8 +21,7 @@ public class ZeroBytePadding
      *
      * @return the name of the algorithm the padder implements.
      */
-    public String getPaddingName()
-    {
+    public String getPaddingName() {
         return "ZeroByte";
     }
 
@@ -35,14 +29,10 @@ public class ZeroBytePadding
      * add the pad bytes to the passed in block, returning the
      * number of bytes added.
      */
-    public int addPadding(
-        byte[]  in,
-        int     inOff)
-    {
+    public int addPadding(byte[] in, int inOff) {
         int added = (in.length - inOff);
 
-        while (inOff < in.length)
-        {
+        while (inOff < in.length) {
             in[inOff] = (byte) 0;
             inOff++;
         }
@@ -53,15 +43,11 @@ public class ZeroBytePadding
     /**
      * return the number of pad bytes present in the block.
      */
-    public int padCount(byte[] in)
-        throws InvalidCipherTextException
-    {
+    public int padCount(byte[] in) throws InvalidCipherTextException {
         int count = in.length;
 
-        while (count > 0)
-        {
-            if (in[count - 1] != 0)
-            {
+        while (count > 0) {
+            if (in[count - 1] != 0) {
                 break;
             }
 

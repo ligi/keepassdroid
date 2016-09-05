@@ -19,35 +19,34 @@
  */
 package com.keepassdroid.compat;
 
-import java.lang.reflect.Method;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
+import java.lang.reflect.Method;
 
 public class EditorCompat {
-	private static Method apply;
-	
-	static {
-		try {
-			apply = Activity.class.getMethod("apply", (Class<SharedPreferences.Editor>[]) null);
-		} catch (Exception e) {
-			// Substitute commit for apply when not available (API level < 9)
-			try {
-				apply = Activity.class.getMethod("commit", (Class<SharedPreferences.Editor>[]) null);
-			} catch (Exception f) {
-				// Should be impossible, but leave apply null in this case
-			}
-		}
-	}
-	
-	public static void apply(SharedPreferences.Editor edit) {
-		try {
-			apply.invoke(edit, (Object[]) null);
-		} catch (Exception e) {
-			// Shouldn't be possible, but call commit directly if this happens
-			edit.commit();
-		}
-		
-	}
+    private static Method apply;
+
+    static {
+        try {
+            apply = Activity.class.getMethod("apply", (Class<SharedPreferences.Editor>[]) null);
+        } catch (Exception e) {
+            // Substitute commit for apply when not available (API level < 9)
+            try {
+                apply = Activity.class.getMethod("commit", (Class<SharedPreferences.Editor>[]) null);
+            } catch (Exception f) {
+                // Should be impossible, but leave apply null in this case
+            }
+        }
+    }
+
+    public static void apply(SharedPreferences.Editor edit) {
+        try {
+            apply.invoke(edit, (Object[]) null);
+        } catch (Exception e) {
+            // Shouldn't be possible, but call commit directly if this happens
+            edit.commit();
+        }
+
+    }
 
 }

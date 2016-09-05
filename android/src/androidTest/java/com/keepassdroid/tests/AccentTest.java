@@ -23,19 +23,19 @@ import android.test.InstrumentationTestCase;
 import com.keepassdroid.tests.database.TestData;
 
 public class AccentTest extends InstrumentationTestCase {
-	
-	private static final String KEYFILE = "";
-	private static final String PASSWORD = "é";
-	private static final String ASSET = "accent.kdb";
-	private static final String FILENAME = "/sdcard/accent.kdb";
-	
-	public void testOpen() {
 
-		try {
-			TestData.GetDb(getInstrumentation().getContext(), ASSET, PASSWORD, KEYFILE, FILENAME);
-		} catch (Exception e) {
-			assertTrue("Failed to open database", false);
-		}
-	}
+    private static final String KEYFILE = "";
+    private static final String PASSWORD = "é";
+    private static final String ASSET = "accent.kdb";
+    private static final String FILENAME = "/sdcard/accent.kdb";
+
+    public void testOpen() {
+
+        try {
+            TestData.GetDb(getInstrumentation().getContext(), ASSET, PASSWORD, KEYFILE, FILENAME);
+        } catch (Exception e) {
+            assertTrue("Failed to open database", false);
+        }
+    }
 
 }

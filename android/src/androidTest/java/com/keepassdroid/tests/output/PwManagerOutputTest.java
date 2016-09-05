@@ -39,105 +39,105 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import static org.junit.Assert.assertArrayEquals;
- 
+
 public class PwManagerOutputTest extends InstrumentationTestCase {
-  PwDatabaseV3Debug mPM;
-  
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    
-    mPM = TestData.GetTest1(getInstrumentation().getContext());
-  }
-  
-  public void testPlainContent() throws IOException, PwDbOutputException {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
- 
-    PwDbV3Output pos = new PwDbV3OutputDebug(mPM, bos, true);
-    pos.outputPlanGroupAndEntries(bos);
-    
-    assertTrue("No output", bos.toByteArray().length > 0);
-    assertArrayEquals("Group and entry output doesn't match.", mPM.postHeader, bos.toByteArray());
- 
-  }
- 
-  public void testChecksum() throws NoSuchAlgorithmException, IOException, PwDbOutputException {
-    //FileOutputStream fos = new FileOutputStream("/dev/null");
-	NullOutputStream nos = new NullOutputStream();
-    MessageDigest md = MessageDigest.getInstance("SHA-256");
-    
-    DigestOutputStream dos = new DigestOutputStream(nos, md);
-  
-    PwDbV3Output pos = new PwDbV3OutputDebug(mPM, dos, true);
-    pos.outputPlanGroupAndEntries(dos);
-    dos.close();
-    
-    byte[] digest = md.digest();
-    assertTrue("No output", digest.length > 0);
-    assertArrayEquals("Hash of groups and entries failed.", mPM.dbHeader.contentsHash, digest);
-  }
- 
-  private void assertHeadersEquals(PwDbHeaderV3 expected, PwDbHeaderV3 actual) {
-	  assertEquals("Flags unequal", expected.flags, actual.flags);
-	  assertEquals("Entries unequal", expected.numEntries, actual.numEntries);
-	  assertEquals("Groups unequal", expected.numGroups, actual.numGroups);
-	  assertEquals("Key Rounds unequal", expected.numKeyEncRounds, actual.numKeyEncRounds);
-	  assertEquals("Signature1 unequal", expected.signature1, actual.signature1);
-	  assertEquals("Signature2 unequal", expected.signature2, actual.signature2);
-	  assertTrue("Version incompatible", PwDbHeaderV3.compatibleHeaders(expected.version, actual.version));
-	  assertArrayEquals("Hash unequal", expected.contentsHash, actual.contentsHash);
-	  assertArrayEquals("IV unequal", expected.encryptionIV, actual.encryptionIV);
-	  assertArrayEquals("Seed unequal", expected.masterSeed, actual.masterSeed);
-	  assertArrayEquals("Seed2 unequal", expected.transformSeed, actual.transformSeed);
-  }
-  
-  public void testHeader() throws PwDbOutputException, IOException {
-	ByteArrayOutputStream bActual = new ByteArrayOutputStream();
-    PwDbV3Output pActual = new PwDbV3OutputDebug(mPM, bActual, true);
-    PwDbHeaderV3 header = pActual.outputHeader(bActual);
-    
-    ByteArrayOutputStream bExpected = new ByteArrayOutputStream();
-    PwDbHeaderOutputV3 outExpected = new PwDbHeaderOutputV3(mPM.dbHeader, bExpected);
-    outExpected.output();
-    
-    assertHeadersEquals(mPM.dbHeader, header);    
-    assertTrue("No output", bActual.toByteArray().length > 0);
-    assertArrayEquals("Header does not match.", bExpected.toByteArray(), bActual.toByteArray()); 
-  }
-  
-  public void testFinalKey() throws PwDbOutputException {
-	ByteArrayOutputStream bActual = new ByteArrayOutputStream();
-    PwDbV3Output pActual = new PwDbV3OutputDebug(mPM, bActual, true);
-    PwDbHeader hActual = pActual.outputHeader(bActual);
-    byte[] finalKey = pActual.getFinalKey(hActual);
-    
-    assertArrayEquals("Keys mismatched", mPM.finalKey, finalKey);
-	  
-  }
-  
-  public void testFullWrite() throws IOException, PwDbOutputException  {
-	AssetManager am = getInstrumentation().getContext().getAssets();
-	InputStream is = am.open("test1.kdb");
+    PwDatabaseV3Debug mPM;
 
-	// Pull file into byte array (for streaming fun)
-	ByteArrayOutputStream bExpected = new ByteArrayOutputStream();
-	while (true) {
-		int data = is.read();
-		if ( data == -1 ) {
-			break;
-		}
-		bExpected.write(data);
-	}
-	
-	ByteArrayOutputStream bActual = new ByteArrayOutputStream();
-	PwDbV3Output pActual = new PwDbV3OutputDebug(mPM, bActual, true);
-	pActual.output();
-	//pActual.close();
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
-	FileOutputStream fos = new FileOutputStream(new File(getInstrumentation().getTargetContext().getFilesDir(),"/test1_out.kdb"));
-	fos.write(bActual.toByteArray());
-	fos.close();
-	assertArrayEquals("Databases do not match.", bExpected.toByteArray(), bActual.toByteArray());
-  
-  }
+        mPM = TestData.GetTest1(getInstrumentation().getContext());
+    }
+
+    public void testPlainContent() throws IOException, PwDbOutputException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        PwDbV3Output pos = new PwDbV3OutputDebug(mPM, bos, true);
+        pos.outputPlanGroupAndEntries(bos);
+
+        assertTrue("No output", bos.toByteArray().length > 0);
+        assertArrayEquals("Group and entry output doesn't match.", mPM.postHeader, bos.toByteArray());
+
+    }
+
+    public void testChecksum() throws NoSuchAlgorithmException, IOException, PwDbOutputException {
+        //FileOutputStream fos = new FileOutputStream("/dev/null");
+        NullOutputStream nos = new NullOutputStream();
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+        DigestOutputStream dos = new DigestOutputStream(nos, md);
+
+        PwDbV3Output pos = new PwDbV3OutputDebug(mPM, dos, true);
+        pos.outputPlanGroupAndEntries(dos);
+        dos.close();
+
+        byte[] digest = md.digest();
+        assertTrue("No output", digest.length > 0);
+        assertArrayEquals("Hash of groups and entries failed.", mPM.dbHeader.contentsHash, digest);
+    }
+
+    private void assertHeadersEquals(PwDbHeaderV3 expected, PwDbHeaderV3 actual) {
+        assertEquals("Flags unequal", expected.flags, actual.flags);
+        assertEquals("Entries unequal", expected.numEntries, actual.numEntries);
+        assertEquals("Groups unequal", expected.numGroups, actual.numGroups);
+        assertEquals("Key Rounds unequal", expected.numKeyEncRounds, actual.numKeyEncRounds);
+        assertEquals("Signature1 unequal", expected.signature1, actual.signature1);
+        assertEquals("Signature2 unequal", expected.signature2, actual.signature2);
+        assertTrue("Version incompatible", PwDbHeaderV3.compatibleHeaders(expected.version, actual.version));
+        assertArrayEquals("Hash unequal", expected.contentsHash, actual.contentsHash);
+        assertArrayEquals("IV unequal", expected.encryptionIV, actual.encryptionIV);
+        assertArrayEquals("Seed unequal", expected.masterSeed, actual.masterSeed);
+        assertArrayEquals("Seed2 unequal", expected.transformSeed, actual.transformSeed);
+    }
+
+    public void testHeader() throws PwDbOutputException, IOException {
+        ByteArrayOutputStream bActual = new ByteArrayOutputStream();
+        PwDbV3Output pActual = new PwDbV3OutputDebug(mPM, bActual, true);
+        PwDbHeaderV3 header = pActual.outputHeader(bActual);
+
+        ByteArrayOutputStream bExpected = new ByteArrayOutputStream();
+        PwDbHeaderOutputV3 outExpected = new PwDbHeaderOutputV3(mPM.dbHeader, bExpected);
+        outExpected.output();
+
+        assertHeadersEquals(mPM.dbHeader, header);
+        assertTrue("No output", bActual.toByteArray().length > 0);
+        assertArrayEquals("Header does not match.", bExpected.toByteArray(), bActual.toByteArray());
+    }
+
+    public void testFinalKey() throws PwDbOutputException {
+        ByteArrayOutputStream bActual = new ByteArrayOutputStream();
+        PwDbV3Output pActual = new PwDbV3OutputDebug(mPM, bActual, true);
+        PwDbHeader hActual = pActual.outputHeader(bActual);
+        byte[] finalKey = pActual.getFinalKey(hActual);
+
+        assertArrayEquals("Keys mismatched", mPM.finalKey, finalKey);
+
+    }
+
+    public void testFullWrite() throws IOException, PwDbOutputException {
+        AssetManager am = getInstrumentation().getContext().getAssets();
+        InputStream is = am.open("test1.kdb");
+
+        // Pull file into byte array (for streaming fun)
+        ByteArrayOutputStream bExpected = new ByteArrayOutputStream();
+        while (true) {
+            int data = is.read();
+            if (data == -1) {
+                break;
+            }
+            bExpected.write(data);
+        }
+
+        ByteArrayOutputStream bActual = new ByteArrayOutputStream();
+        PwDbV3Output pActual = new PwDbV3OutputDebug(mPM, bActual, true);
+        pActual.output();
+        //pActual.close();
+
+        FileOutputStream fos = new FileOutputStream(new File(getInstrumentation().getTargetContext().getFilesDir(), "/test1_out.kdb"));
+        fos.write(bActual.toByteArray());
+        fos.close();
+        assertArrayEquals("Databases do not match.", bExpected.toByteArray(), bActual.toByteArray());
+
+    }
 }

@@ -20,17 +20,21 @@
 package com.keepassdroid.database.exception;
 
 import android.net.Uri;
-
 import com.keepassdroid.utils.EmptyUtils;
-
 import java.io.FileNotFoundException;
 
 /**
  * Created by bpellin on 3/14/16.
  */
 public class ContentFileNotFoundException extends FileNotFoundException {
+    public ContentFileNotFoundException() {
+        super();
+    }
+
     public static FileNotFoundException getInstance(Uri uri) {
-        if (uri == null) { return new FileNotFoundException(); }
+        if (uri == null) {
+            return new FileNotFoundException();
+        }
 
         String scheme = uri.getScheme();
 
@@ -39,9 +43,5 @@ public class ContentFileNotFoundException extends FileNotFoundException {
         }
 
         return new FileNotFoundException();
-    }
-
-    public  ContentFileNotFoundException() {
-        super();
     }
 }

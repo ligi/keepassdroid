@@ -1,28 +1,23 @@
 package org.bouncycastle.asn1;
 
-import java.util.Enumeration;
 import java.io.IOException;
+import java.util.Enumeration;
 
 @SuppressWarnings("unchecked")
-class LazyDERConstructionEnumeration
-    implements Enumeration
-{
+class LazyDERConstructionEnumeration implements Enumeration {
     private ASN1InputStream aIn;
-    private Object          nextObj;
+    private Object nextObj;
 
-    public LazyDERConstructionEnumeration(byte[] encoded)
-    {
+    public LazyDERConstructionEnumeration(byte[] encoded) {
         aIn = new ASN1InputStream(encoded, true);
         nextObj = readObject();
     }
 
-    public boolean hasMoreElements()
-    {
+    public boolean hasMoreElements() {
         return nextObj != null;
     }
 
-    public Object nextElement()
-    {
+    public Object nextElement() {
         Object o = nextObj;
 
         nextObj = readObject();
@@ -30,14 +25,10 @@ class LazyDERConstructionEnumeration
         return o;
     }
 
-    private Object readObject()
-    {
-        try
-        {
+    private Object readObject() {
+        try {
             return aIn.readObject();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new ASN1ParsingException("malformed DER construction: " + e, e);
         }
     }

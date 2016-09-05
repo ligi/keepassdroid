@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources
-  xmlns:tools="http://schemas.android.com/tools"
-  tools:ignore="MissingTranslation">
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:ignore="MissingTranslation">
 
     <string name="app_name">Material KeePass</string>
     <string name="error_wrong_length">Enter a positive integer on length field</string>

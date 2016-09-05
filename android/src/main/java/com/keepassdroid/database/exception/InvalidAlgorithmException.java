@@ -20,13 +20,13 @@
 package com.keepassdroid.database.exception;
 
 public class InvalidAlgorithmException extends InvalidDBException {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3062682891863487208L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3062682891863487208L;
 
-	public InvalidAlgorithmException() {
-		super();
-	}
+    public InvalidAlgorithmException() {
+        super();
+    }
 
 }

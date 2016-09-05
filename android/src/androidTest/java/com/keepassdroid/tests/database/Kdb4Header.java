@@ -28,21 +28,21 @@ import com.keepassdroid.database.load.ImporterV4;
 import java.io.InputStream;
 
 public class Kdb4Header extends InstrumentationTestCase {
-	public void testReadHeader() throws Exception {
-		Context ctx = getInstrumentation().getContext();
-		
-		AssetManager am = ctx.getAssets();
-		InputStream is = am.open("test.kdbx", AssetManager.ACCESS_STREAMING);
-		
-		ImporterV4 importer = new ImporterV4();
+    public void testReadHeader() throws Exception {
+        Context ctx = getInstrumentation().getContext();
 
-		PwDatabaseV4 db = importer.openDatabase(is, "12345", null);
-		
-		assertEquals(6000, db.numKeyEncRounds);
-		
-		assertTrue(db.dataCipher.equals(CipherFactory.AES_CIPHER));
-		
-		is.close();
+        AssetManager am = ctx.getAssets();
+        InputStream is = am.open("test.kdbx", AssetManager.ACCESS_STREAMING);
 
-	}
+        ImporterV4 importer = new ImporterV4();
+
+        PwDatabaseV4 db = importer.openDatabase(is, "12345", null);
+
+        assertEquals(6000, db.numKeyEncRounds);
+
+        assertTrue(db.dataCipher.equals(CipherFactory.AES_CIPHER));
+
+        is.close();
+
+    }
 }

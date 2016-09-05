@@ -8,32 +8,25 @@ import java.util.Vector;
  * use that class in preference.
  */
 @SuppressWarnings("unchecked")
-public class DEREncodableVector
-{
+public class DEREncodableVector {
     Vector v = new Vector();
 
     /**
      * @deprecated use ASN1EncodableVector instead.
      */
-    public DEREncodableVector()
-    {
+    public DEREncodableVector() {
 
     }
-    
-    public void add(
-        DEREncodable   obj)
-    {
+
+    public void add(DEREncodable obj) {
         v.addElement(obj);
     }
 
-    public DEREncodable get(
-        int i)
-    {
-        return (DEREncodable)v.elementAt(i);
+    public DEREncodable get(int i) {
+        return (DEREncodable) v.elementAt(i);
     }
 
-    public int size()
-    {
+    public int size() {
         return v.size();
     }
 }

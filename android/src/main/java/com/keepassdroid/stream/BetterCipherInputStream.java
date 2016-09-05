@@ -21,7 +21,6 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-
 import javax.crypto.Cipher;
 import javax.crypto.NullCipher;
 
@@ -29,7 +28,7 @@ import javax.crypto.NullCipher;
  * This class wraps an {@code InputStream} and a cipher so that {@code read()}
  * methods return data that are read from the underlying {@code InputStream} and
  * processed by the cipher.
- * <p>
+ * <p/>
  * The cipher must be initialized for the requested operation before being used
  * by a {@code BetterCipherInputStream}. For example, if a cipher initialized for
  * decryption is used with a {@code BetterCipherInputStream}, the {@code
@@ -37,8 +36,8 @@ import javax.crypto.NullCipher;
  */
 public class BetterCipherInputStream extends FilterInputStream {
 
-    private final Cipher cipher;
     private static final int I_DEFAULT_BUFFER_SIZE = 8 * 1024;
+    private final Cipher cipher;
     private final byte[] i_buffer;
     private int index; // index of the bytes to return from o_buffer
     private byte[] o_buffer;
@@ -48,25 +47,20 @@ public class BetterCipherInputStream extends FilterInputStream {
      * Creates a new {@code BetterCipherInputStream} instance for an {@code
      * InputStream} and a cipher.
      *
-     * @param is
-     *            the input stream to read data from.
-     * @param c
-     *            the cipher to process the data with.
+     * @param is the input stream to read data from.
+     * @param c  the cipher to process the data with.
      */
     public BetterCipherInputStream(InputStream is, Cipher c) {
-    	this(is, c, I_DEFAULT_BUFFER_SIZE);
+        this(is, c, I_DEFAULT_BUFFER_SIZE);
     }
 
     /**
      * Creates a new {@code BetterCipherInputStream} instance for an {@code
      * InputStream} and a cipher.
      *
-     * @param is
-     *            the input stream to read data from.
-     * @param c
-     *            the cipher to process the data with.
-     * @param bufferSize
-     *            size to buffer output from the cipher
+     * @param is         the input stream to read data from.
+     * @param c          the cipher to process the data with.
+     * @param bufferSize size to buffer output from the cipher
      */
     public BetterCipherInputStream(InputStream is, Cipher c, int bufferSize) {
         super(is);
@@ -77,11 +71,10 @@ public class BetterCipherInputStream extends FilterInputStream {
     /**
      * Creates a new {@code BetterCipherInputStream} instance for an {@code
      * InputStream} without a cipher.
-     * <p>
+     * <p/>
      * A {@code NullCipher} is created and used to process the data.
      *
-     * @param is
-     *            the input stream to read data from.
+     * @param is the input stream to read data from.
      */
     protected BetterCipherInputStream(InputStream is) {
         this(is, new NullCipher());
@@ -91,15 +84,12 @@ public class BetterCipherInputStream extends FilterInputStream {
      * Reads the next byte from this cipher input stream.
      *
      * @return the next byte, or {@code -1} if the end of the stream is reached.
-     * @throws IOException
-     *             if an error occurs.
+     * @throws IOException if an error occurs.
      */
     @Override
     public int read() throws IOException {
         if (finished) {
-            return ((o_buffer == null) || (index == o_buffer.length))
-                            ? -1
-                            : o_buffer[index++] & 0xFF;
+            return ((o_buffer == null) || (index == o_buffer.length)) ? -1 : o_buffer[index++] & 0xFF;
         }
         if ((o_buffer != null) && (index < o_buffer.length)) {
             return o_buffer[index++] & 0xFF;
@@ -126,12 +116,10 @@ public class BetterCipherInputStream extends FilterInputStream {
      * Reads the next {@code b.length} bytes from this input stream into buffer
      * {@code b}.
      *
-     * @param b
-     *            the buffer to be filled with data.
+     * @param b the buffer to be filled with data.
      * @return the number of bytes filled into buffer {@code b}, or {@code -1}
-     *         if the end of the stream is reached.
-     * @throws IOException
-     *             if an error occurs.
+     * if the end of the stream is reached.
+     * @throws IOException if an error occurs.
      */
     @Override
     public int read(byte[] b) throws IOException {
@@ -141,22 +129,17 @@ public class BetterCipherInputStream extends FilterInputStream {
     /**
      * Reads the next {@code len} bytes from this input stream into buffer
      * {@code b} starting at offset {@code off}.
-     * <p>
+     * <p/>
      * if {@code b} is {@code null}, the next {@code len} bytes are read and
      * discarded.
      *
-     * @param b
-     *            the buffer to be filled with data.
-     * @param off
-     *            the offset to start in the buffer.
-     * @param len
-     *            the maximum number of bytes to read.
+     * @param b   the buffer to be filled with data.
+     * @param off the offset to start in the buffer.
+     * @param len the maximum number of bytes to read.
      * @return the number of bytes filled into buffer {@code b}, or {@code -1}
-     *         of the of the stream is reached.
-     * @throws IOException
-     *             if an error occurs.
-     * @throws NullPointerException
-     *             if the underlying input stream is {@code null}.
+     * of the of the stream is reached.
+     * @throws IOException          if an error occurs.
+     * @throws NullPointerException if the underlying input stream is {@code null}.
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
@@ -166,12 +149,12 @@ public class BetterCipherInputStream extends FilterInputStream {
 
         int read_b;
         int i;
-        for (i=0; i<len; i++) {
+        for (i = 0; i < len; i++) {
             if ((read_b = read()) == -1) {
                 return (i == 0) ? -1 : i;
             }
             if (b != null) {
-                b[off+i] = (byte) read_b;
+                b[off + i] = (byte) read_b;
             }
         }
         return i;
@@ -179,16 +162,14 @@ public class BetterCipherInputStream extends FilterInputStream {
 
     /**
      * Skips up to n bytes from this input stream.
-     * <p>
+     * <p/>
      * The number of bytes skipped depends on the result of a call to
      * {@link BetterCipherInputStream#available() available}. The smaller of n and the
      * result are the number of bytes being skipped.
      *
-     * @param n
-     *            the number of bytes that should be skipped.
+     * @param n the number of bytes that should be skipped.
      * @return the number of bytes actually skipped.
-     * @throws IOException
-     *             if an error occurs
+     * @throws IOException if an error occurs
      */
     @Override
     public long skip(long n) throws IOException {
@@ -207,8 +188,7 @@ public class BetterCipherInputStream extends FilterInputStream {
      * Returns the number of bytes available without blocking.
      *
      * @return the number of bytes available, currently zero.
-     * @throws IOException
-     *             if an error occurs
+     * @throws IOException if an error occurs
      */
     @Override
     public int available() throws IOException {
@@ -219,8 +199,7 @@ public class BetterCipherInputStream extends FilterInputStream {
      * Closes this {@code BetterCipherInputStream}, also closes the underlying input
      * stream and call {@code doFinal} on the cipher object.
      *
-     * @throws IOException
-     *             if an error occurs.
+     * @throws IOException if an error occurs.
      */
     @Override
     public void close() throws IOException {
@@ -238,7 +217,7 @@ public class BetterCipherInputStream extends FilterInputStream {
      * {@code reset}, which it does not.
      *
      * @return false, since this input stream does not support {@code mark} and
-     *         {@code reset}.
+     * {@code reset}.
      */
     @Override
     public boolean markSupported() {

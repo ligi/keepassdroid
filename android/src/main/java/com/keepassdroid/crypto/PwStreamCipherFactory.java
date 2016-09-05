@@ -19,47 +19,43 @@
  */
 package com.keepassdroid.crypto;
 
+import com.keepassdroid.database.CrsAlgorithm;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import org.bouncycastle.crypto.StreamCipher;
 import org.bouncycastle.crypto.engines.Salsa20Engine;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
-import com.keepassdroid.database.CrsAlgorithm;
-
 public class PwStreamCipherFactory {
-	public static StreamCipher getInstance(CrsAlgorithm alg, byte[] key) {
-		if ( alg == CrsAlgorithm.Salsa20 ) {
-			return getSalsa20(key);
-			
-		} else {
-			return null;
-		}
-	}
-	
-	
-	private static final byte[] SALSA_IV = new byte[]{ (byte)0xE8, 0x30, 0x09, 0x4B,
-            (byte)0x97, 0x20, 0x5D, 0x2A };
-	
-	private static StreamCipher getSalsa20(byte[] key) {
-		// Build stream cipher key
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			throw new RuntimeException("SHA 256 not supported");
-		}
-		byte[] key32 = md.digest(key);
-		
-		KeyParameter keyParam = new KeyParameter(key32);
-		ParametersWithIV ivParam = new ParametersWithIV(keyParam, SALSA_IV);
-		
-		StreamCipher cipher = new Salsa20Engine();
-		cipher.init(true, ivParam);
-		
-		return cipher;
-	}
+    private static final byte[] SALSA_IV = new byte[]{(byte) 0xE8, 0x30, 0x09, 0x4B, (byte) 0x97, 0x20, 0x5D, 0x2A};
+
+    public static StreamCipher getInstance(CrsAlgorithm alg, byte[] key) {
+        if (alg == CrsAlgorithm.Salsa20) {
+            return getSalsa20(key);
+
+        } else {
+            return null;
+        }
+    }
+
+    private static StreamCipher getSalsa20(byte[] key) {
+        // Build stream cipher key
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            throw new RuntimeException("SHA 256 not supported");
+        }
+        byte[] key32 = md.digest(key);
+
+        KeyParameter keyParam = new KeyParameter(key32);
+        ParametersWithIV ivParam = new ParametersWithIV(keyParam, SALSA_IV);
+
+        StreamCipher cipher = new Salsa20Engine();
+        cipher.init(true, ivParam);
+
+        return cipher;
+    }
 }

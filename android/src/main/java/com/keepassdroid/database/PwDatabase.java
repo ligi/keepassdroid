@@ -19,12 +19,14 @@
  */
 package com.keepassdroid.database;
 
-import java.io.BufferedInputStream;
+import com.keepassdroid.crypto.finalkey.FinalKey;
+import com.keepassdroid.crypto.finalkey.FinalKeyFactory;
+import com.keepassdroid.database.exception.InvalidKeyFileException;
+import com.keepassdroid.database.exception.KeyFileEmptyException;
+import com.keepassdroid.stream.NullOutputStream;
+import com.keepassdroid.utils.Util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -35,15 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import android.os.DropBoxManager.Entry;
-
-import com.keepassdroid.crypto.finalkey.FinalKey;
-import com.keepassdroid.crypto.finalkey.FinalKeyFactory;
-import com.keepassdroid.database.exception.InvalidKeyFileException;
-import com.keepassdroid.database.exception.KeyFileEmptyException;
-import com.keepassdroid.stream.NullOutputStream;
-import com.keepassdroid.utils.Util;
 
 public abstract class PwDatabase {
 
@@ -57,7 +50,9 @@ public abstract class PwDatabase {
 
 
     private static boolean isKDBExtension(String filename) {
-        if (filename == null) { return false; }
+        if (filename == null) {
+            return false;
+        }
 
         int extIdx = filename.lastIndexOf(".");
         if (extIdx == -1) return false;
@@ -71,6 +66,26 @@ public abstract class PwDatabase {
         } else {
             return new PwDatabaseV4();
         }
+    }
+
+    /**
+     * Encrypt the master key a few times to make brute-force key-search harder
+     *
+     * @throws IOException
+     */
+    private static byte[] transformMasterKey(byte[] pKeySeed, byte[] pKey, int rounds) throws IOException {
+        FinalKey key = FinalKeyFactory.createFinalKey();
+
+        return key.transformMasterKey(pKeySeed, pKey, rounds);
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
     }
 
     public void makeFinalKey(byte[] masterSeed, byte[] masterSeed2, int numRounds) throws IOException {
@@ -92,106 +107,81 @@ public abstract class PwDatabase {
         finalKey = md.digest();
     }
 
-    /**
-     * Encrypt the master key a few times to make brute-force key-search harder
-     * @throws IOException
-     */
-    private static byte[] transformMasterKey( byte[] pKeySeed, byte[] pKey, int rounds ) throws IOException
-    {
-        FinalKey key = FinalKeyFactory.createFinalKey();
-
-        return key.transformMasterKey(pKeySeed, pKey, rounds);
-    }
-
-
     public abstract byte[] getMasterKey(String key, InputStream keyInputStream) throws InvalidKeyFileException, IOException;
 
-    public void setMasterKey(String key, InputStream keyInputStream)
-            throws InvalidKeyFileException, IOException {
-                assert(key != null);
+    public void setMasterKey(String key, InputStream keyInputStream) throws InvalidKeyFileException, IOException {
+        assert (key != null);
 
-                masterKey = getMasterKey(key, keyInputStream);
-            }
-
-    protected byte[] getCompositeKey(String key, InputStream keyInputStream)
-            throws InvalidKeyFileException, IOException {
-                assert(key != null && keyInputStream != null);
-
-                byte[] fileKey = getFileKey(keyInputStream);
-
-                byte[] passwordKey = getPasswordKey(key);
-
-                MessageDigest md;
-                try {
-                    md = MessageDigest.getInstance("SHA-256");
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IOException("SHA-256 not supported");
-                }
-
-                md.update(passwordKey);
-
-                return md.digest(fileKey);
+        masterKey = getMasterKey(key, keyInputStream);
     }
 
-    protected byte[] getFileKey(InputStream keyInputStream)
-            throws InvalidKeyFileException, IOException {
-                assert(keyInputStream != null);
+    protected byte[] getCompositeKey(String key, InputStream keyInputStream) throws InvalidKeyFileException, IOException {
+        assert (key != null && keyInputStream != null);
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                Util.copyStream(keyInputStream, bos);
-                byte[] keyData = bos.toByteArray();
+        byte[] fileKey = getFileKey(keyInputStream);
 
-                ByteArrayInputStream bis = new ByteArrayInputStream(keyData);
-                byte[] key = loadXmlKeyFile(bis);
-                if ( key != null ) {
-                    return key;
-                }
+        byte[] passwordKey = getPasswordKey(key);
 
-                long fileSize = keyData.length;
-                if ( fileSize == 0 ) {
-                    throw new KeyFileEmptyException();
-                } else if ( fileSize == 32 ) {
-                    return keyData;
-                } else if ( fileSize == 64 ) {
-                    byte[] hex = new byte[64];
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IOException("SHA-256 not supported");
+        }
 
-                    try {
-                        return hexStringToByteArray(new String(keyData));
-                    } catch (IndexOutOfBoundsException e) {
-                        // Key is not base 64, treat it as binary data
-                    }
-                }
+        md.update(passwordKey);
 
-                MessageDigest md;
-                try {
-                    md = MessageDigest.getInstance("SHA-256");
-                } catch (NoSuchAlgorithmException e) {
-                    throw new IOException("SHA-256 not supported");
-                }
-                //SHA256Digest md = new SHA256Digest();
-                byte[] buffer = new byte[2048];
-                int offset = 0;
+        return md.digest(fileKey);
+    }
 
-                try {
-                    md.update(keyData);
-                } catch (Exception e) {
-                    System.out.println(e.toString());
-                }
+    protected byte[] getFileKey(InputStream keyInputStream) throws InvalidKeyFileException, IOException {
+        assert (keyInputStream != null);
 
-                return md.digest();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        Util.copyStream(keyInputStream, bos);
+        byte[] keyData = bos.toByteArray();
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(keyData);
+        byte[] key = loadXmlKeyFile(bis);
+        if (key != null) {
+            return key;
+        }
+
+        long fileSize = keyData.length;
+        if (fileSize == 0) {
+            throw new KeyFileEmptyException();
+        } else if (fileSize == 32) {
+            return keyData;
+        } else if (fileSize == 64) {
+            byte[] hex = new byte[64];
+
+            try {
+                return hexStringToByteArray(new String(keyData));
+            } catch (IndexOutOfBoundsException e) {
+                // Key is not base 64, treat it as binary data
             }
+        }
+
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IOException("SHA-256 not supported");
+        }
+        //SHA256Digest md = new SHA256Digest();
+        byte[] buffer = new byte[2048];
+        int offset = 0;
+
+        try {
+            md.update(keyData);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
+        return md.digest();
+    }
 
     protected abstract byte[] loadXmlKeyFile(InputStream keyInputStream);
-
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                                 + Character.digit(s.charAt(i+1), 16));
-        }
-        return data;
-    }
 
     public boolean validatePasswordEncoding(String key) {
         String encoding = getPasswordEncoding();
@@ -217,10 +207,9 @@ public abstract class PwDatabase {
     protected abstract String getPasswordEncoding();
 
     public byte[] getPasswordKey(String key) throws IOException {
-        assert(key!=null);
+        assert (key != null);
 
-        if ( key.length() == 0 )
-            throw new IllegalArgumentException( "Key cannot be empty." );
+        if (key.length() == 0) throw new IllegalArgumentException("Key cannot be empty.");
 
         MessageDigest md;
         try {
@@ -236,7 +225,7 @@ public abstract class PwDatabase {
             assert false;
             bKey = key.getBytes();
         }
-        md.update(bKey, 0, bKey.length );
+        md.update(bKey, 0, bKey.length);
 
         return md.digest();
     }
@@ -257,7 +246,7 @@ public abstract class PwDatabase {
 
     public void addGroupTo(PwGroup newGroup, PwGroup parent) {
         // Add group to parent group
-        if ( parent == null ) {
+        if (parent == null) {
             parent = rootGroup;
         }
 
@@ -298,15 +287,14 @@ public abstract class PwDatabase {
     /**
      * Determine if an id number is already in use
      *
-     * @param id
-     *            ID number to check for
+     * @param id ID number to check for
      * @return True if the ID is used, false otherwise
      */
     protected boolean isGroupIdUsed(PwGroupId id) {
         List<PwGroup> groups = getGroups();
 
         for (int i = 0; i < groups.size(); i++) {
-            PwGroup group =groups.get(i);
+            PwGroup group = groups.get(i);
             if (group.getId().equals(id)) {
                 return true;
             }
@@ -324,12 +312,12 @@ public abstract class PwDatabase {
         List<PwGroup> childGroups = currentGroup.childGroups;
         List<PwEntry> childEntries = currentGroup.childEntries;
 
-        for (int i = 0; i < childEntries.size(); i++ ) {
+        for (int i = 0; i < childEntries.size(); i++) {
             PwEntry cur = childEntries.get(i);
             entries.put(cur.getUUID(), cur);
         }
 
-        for (int i = 0; i < childGroups.size(); i++ ) {
+        for (int i = 0; i < childGroups.size(); i++) {
             PwGroup cur = childGroups.get(i);
             groups.put(cur.getId(), cur);
             populateGlobals(cur);

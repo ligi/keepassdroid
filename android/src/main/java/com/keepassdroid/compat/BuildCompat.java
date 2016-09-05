@@ -19,51 +19,48 @@
  */
 package com.keepassdroid.compat;
 
+import android.os.Build;
 import java.lang.reflect.Field;
 
-import android.os.Build;
-
 public class BuildCompat {
-	private static Field manufacturer;
-	private static String manuText;
-	
-	public static final int VERSION_CODE_GINGERBREAD = 9;
-	public static final int VERSION_CODE_ICE_CREAM_SANDWICH = 14;
-	public static final int VERSION_CODE_JELLY_BEAN = 16;
-	public static final int VERSION_CODE_JELLY_BEAN_MR2 = 18;
-	public static final int VERSION_KITKAT = 19;
+    public static final int VERSION_CODE_GINGERBREAD = 9;
+    public static final int VERSION_CODE_ICE_CREAM_SANDWICH = 14;
+    public static final int VERSION_CODE_JELLY_BEAN = 16;
+    public static final int VERSION_CODE_JELLY_BEAN_MR2 = 18;
+    public static final int VERSION_KITKAT = 19;
+    private static Field manufacturer;
+    private static String manuText;
+    private static Field versionSDK;
+    private static int versionInt;
 
-	private static Field versionSDK;
-	private static int versionInt;
-	
-	static {
-		// MANUFACTURER is only available in API version 4 and later
-		try {
-			manufacturer = Build.class.getField("MANUFACTURER");
-			manuText = (String) manufacturer.get(null);
-		} catch (Exception e) {
-			manuText = "";
-		}
-		
-		// SDK is only available in API version 4 and later
-		try {
-			versionSDK = Build.VERSION.class.getField("SDK_INT");
-			versionInt = versionSDK.getInt(null);
-		} catch (Exception e) {
-			try {
+    static {
+        // MANUFACTURER is only available in API version 4 and later
+        try {
+            manufacturer = Build.class.getField("MANUFACTURER");
+            manuText = (String) manufacturer.get(null);
+        } catch (Exception e) {
+            manuText = "";
+        }
+
+        // SDK is only available in API version 4 and later
+        try {
+            versionSDK = Build.VERSION.class.getField("SDK_INT");
+            versionInt = versionSDK.getInt(null);
+        } catch (Exception e) {
+            try {
                 versionInt = Integer.parseInt(Build.VERSION.SDK);
-			} catch (Exception nfe) {
-				versionInt = -1;
-			}
-		}
-	}
-	
-	public static String getManufacturer() {
-		return manuText;
-	}
-	
-	public static int getSdkVersion() {
-		return versionInt;
-	}
+            } catch (Exception nfe) {
+                versionInt = -1;
+            }
+        }
+    }
+
+    public static String getManufacturer() {
+        return manuText;
+    }
+
+    public static int getSdkVersion() {
+        return versionInt;
+    }
 
 }

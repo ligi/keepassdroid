@@ -20,16 +20,16 @@
 package com.keepassdroid.database.exception;
 
 public class PwDbOutputException extends Exception {
-	public PwDbOutputException(String string) {
-		super(string);
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3321212743159473368L;
 
-	public PwDbOutputException(Exception e) {
-		super(e);
-	}
+    public PwDbOutputException(String string) {
+        super(string);
+    }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3321212743159473368L;
+    public PwDbOutputException(Exception e) {
+        super(e);
+    }
 }

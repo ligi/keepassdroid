@@ -1,10 +1,39 @@
 package org.bouncycastle.jce.provider;
 
+import java.security.AlgorithmParameters;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.InvalidParameterException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.ShortBufferException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEParameterSpec;
 import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.engines.TwofishEngine;
+import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.modes.CFBBlockCipher;
+import org.bouncycastle.crypto.modes.CTSBlockCipher;
+import org.bouncycastle.crypto.modes.OFBBlockCipher;
+import org.bouncycastle.crypto.paddings.BlockCipherPadding;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.bouncycastle.crypto.paddings.ZeroBytePadding;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.bouncycastle.crypto.params.ParametersWithRandom;
+import org.bouncycastle.util.Strings;
+
 /*
 import org.bouncycastle.crypto.engines.AESFastEngine;
 import org.bouncycastle.crypto.engines.BlowfishEngine;
@@ -23,178 +52,119 @@ import org.bouncycastle.crypto.engines.SerpentEngine;
 import org.bouncycastle.crypto.engines.SkipjackEngine;
 import org.bouncycastle.crypto.engines.TEAEngine;
 */
-import org.bouncycastle.crypto.engines.TwofishEngine;
 //import org.bouncycastle.crypto.engines.XTEAEngine;
 //import org.bouncycastle.crypto.modes.AEADBlockCipher;
-import org.bouncycastle.crypto.modes.CBCBlockCipher;
 //import org.bouncycastle.crypto.modes.CCMBlockCipher;
-import org.bouncycastle.crypto.modes.CFBBlockCipher;
-import org.bouncycastle.crypto.modes.CTSBlockCipher;
 /*
 import org.bouncycastle.crypto.modes.EAXBlockCipher;
 import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.bouncycastle.crypto.modes.GOFBBlockCipher;
 */
-import org.bouncycastle.crypto.modes.OFBBlockCipher;
 /*
 import org.bouncycastle.crypto.modes.OpenPGPCFBBlockCipher;
 import org.bouncycastle.crypto.modes.PGPCFBBlockCipher;
 import org.bouncycastle.crypto.modes.SICBlockCipher;
 */
-import org.bouncycastle.crypto.paddings.BlockCipherPadding;
 /*
 import org.bouncycastle.crypto.paddings.ISO10126d2Padding;
 import org.bouncycastle.crypto.paddings.ISO7816d4Padding;
 */
-import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 /*
 import org.bouncycastle.crypto.paddings.TBCPadding;
 import org.bouncycastle.crypto.paddings.X923Padding;
 */
-import org.bouncycastle.crypto.paddings.ZeroBytePadding;
-import org.bouncycastle.crypto.params.KeyParameter;
-import org.bouncycastle.crypto.params.ParametersWithIV;
-import org.bouncycastle.crypto.params.ParametersWithRandom;
 /*
 import org.bouncycastle.crypto.params.ParametersWithSBox;
 import org.bouncycastle.crypto.params.RC2Parameters;
 import org.bouncycastle.crypto.params.RC5Parameters;
 import org.bouncycastle.jce.spec.GOST28147ParameterSpec;
 */
-import org.bouncycastle.util.Strings;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.ShortBufferException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEParameterSpec;
 /*
 import javax.crypto.spec.RC2ParameterSpec;
 import javax.crypto.spec.RC5ParameterSpec;
 */
-import java.security.AlgorithmParameters;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.InvalidParameterException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.AlgorithmParameterSpec;
 
 @SuppressWarnings("unchecked")
-public class JCEBlockCipher extends WrapCipherSpi
-    implements PBE
-{
+public class JCEBlockCipher extends WrapCipherSpi implements PBE {
     //
     // specs we can handle.
     //
-	private Class[]                 availableSpecs =
-                                    {
-                                        //RC2ParameterSpec.class,
-                                        //RC5ParameterSpec.class,
-                                        IvParameterSpec.class,
-                                        PBEParameterSpec.class,
-                                        //GOST28147ParameterSpec.class
-                                    };
- 
-    private BlockCipher             baseEngine;
-    private GenericBlockCipher      cipher;
-    private ParametersWithIV        ivParam;
+    private Class[] availableSpecs = {
+            //RC2ParameterSpec.class,
+            //RC5ParameterSpec.class,
+            IvParameterSpec.class, PBEParameterSpec.class,
+            //GOST28147ParameterSpec.class
+    };
 
-    private int                     ivLength = 0;
+    private BlockCipher baseEngine;
+    private GenericBlockCipher cipher;
+    private ParametersWithIV ivParam;
 
-    private boolean                 padded;
-    
-    private PBEParameterSpec        pbeSpec = null;
-    private String                  pbeAlgorithm = null;
-    
-    private String                  modeName = null;
+    private int ivLength = 0;
 
-    protected JCEBlockCipher(
-        BlockCipher engine)
-    {
+    private boolean padded;
+
+    private PBEParameterSpec pbeSpec = null;
+    private String pbeAlgorithm = null;
+
+    private String modeName = null;
+
+    protected JCEBlockCipher(BlockCipher engine) {
         baseEngine = engine;
 
         cipher = new BufferedGenericBlockCipher(engine);
     }
-        
-    protected JCEBlockCipher(
-        BlockCipher engine,
-        int         ivLength)
-    {
+
+    protected JCEBlockCipher(BlockCipher engine, int ivLength) {
         baseEngine = engine;
 
         this.cipher = new BufferedGenericBlockCipher(engine);
         this.ivLength = ivLength / 8;
     }
 
-    protected JCEBlockCipher(
-        BufferedBlockCipher engine,
-        int                 ivLength)
-    {
+    protected JCEBlockCipher(BufferedBlockCipher engine, int ivLength) {
         baseEngine = engine.getUnderlyingCipher();
 
         this.cipher = new BufferedGenericBlockCipher(engine);
         this.ivLength = ivLength / 8;
     }
 
-    protected int engineGetBlockSize() 
-    {
+    protected int engineGetBlockSize() {
         return baseEngine.getBlockSize();
     }
 
-    protected byte[] engineGetIV() 
-    {
+    protected byte[] engineGetIV() {
         return (ivParam != null) ? ivParam.getIV() : null;
     }
 
-    protected int engineGetKeySize(
-        Key     key) 
-    {
+    protected int engineGetKeySize(Key key) {
         return key.getEncoded().length * 8;
     }
 
-    protected int engineGetOutputSize(
-        int     inputLen) 
-    {
+    protected int engineGetOutputSize(int inputLen) {
         return cipher.getOutputSize(inputLen);
     }
 
-    protected AlgorithmParameters engineGetParameters() 
-    {
-        if (engineParams == null)
-        {
-            if (pbeSpec != null)
-            {
-                try
-                {
+    protected AlgorithmParameters engineGetParameters() {
+        if (engineParams == null) {
+            if (pbeSpec != null) {
+                try {
                     engineParams = AlgorithmParameters.getInstance(pbeAlgorithm, "BC");
                     engineParams.init(pbeSpec);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     return null;
                 }
-            }
-            else if (ivParam != null)
-            {
-                String  name = cipher.getUnderlyingCipher().getAlgorithmName();
+            } else if (ivParam != null) {
+                String name = cipher.getUnderlyingCipher().getAlgorithmName();
 
-                if (name.indexOf('/') >= 0)
-                {
+                if (name.indexOf('/') >= 0) {
                     name = name.substring(0, name.indexOf('/'));
                 }
 
-                try
-                {
+                try {
                     engineParams = AlgorithmParameters.getInstance(name, "BC");
                     engineParams.init(ivParam.getIV());
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     throw new RuntimeException(e.toString());
                 }
             }
@@ -203,53 +173,32 @@ public class JCEBlockCipher extends WrapCipherSpi
         return engineParams;
     }
 
-    protected void engineSetMode(
-        String  mode)
-        throws NoSuchAlgorithmException
-    {
+    protected void engineSetMode(String mode) throws NoSuchAlgorithmException {
         modeName = Strings.toUpperCase(mode);
 
-        if (modeName.equals("ECB"))
-        {
+        if (modeName.equals("ECB")) {
             ivLength = 0;
             cipher = new BufferedGenericBlockCipher(baseEngine);
-        }
-        else if (modeName.equals("CBC"))
-        {
+        } else if (modeName.equals("CBC")) {
             ivLength = baseEngine.getBlockSize();
-            cipher = new BufferedGenericBlockCipher(
-                            new CBCBlockCipher(baseEngine));
-        }
-        else if (modeName.startsWith("OFB"))
-        {
+            cipher = new BufferedGenericBlockCipher(new CBCBlockCipher(baseEngine));
+        } else if (modeName.startsWith("OFB")) {
             ivLength = baseEngine.getBlockSize();
-            if (modeName.length() != 3)
-            {
+            if (modeName.length() != 3) {
                 int wordSize = Integer.parseInt(modeName.substring(3));
 
-                cipher = new BufferedGenericBlockCipher(
-                                new OFBBlockCipher(baseEngine, wordSize));
+                cipher = new BufferedGenericBlockCipher(new OFBBlockCipher(baseEngine, wordSize));
+            } else {
+                cipher = new BufferedGenericBlockCipher(new OFBBlockCipher(baseEngine, 8 * baseEngine.getBlockSize()));
             }
-            else
-            {
-                cipher = new BufferedGenericBlockCipher(
-                        new OFBBlockCipher(baseEngine, 8 * baseEngine.getBlockSize()));
-            }
-        }
-        else if (modeName.startsWith("CFB"))
-        {
+        } else if (modeName.startsWith("CFB")) {
             ivLength = baseEngine.getBlockSize();
-            if (modeName.length() != 3)
-            {
+            if (modeName.length() != 3) {
                 int wordSize = Integer.parseInt(modeName.substring(3));
 
-                cipher = new BufferedGenericBlockCipher(
-                                new CFBBlockCipher(baseEngine, wordSize));
-            }
-            else
-            {
-                cipher = new BufferedGenericBlockCipher(
-                        new CFBBlockCipher(baseEngine, 8 * baseEngine.getBlockSize()));
+                cipher = new BufferedGenericBlockCipher(new CFBBlockCipher(baseEngine, wordSize));
+            } else {
+                cipher = new BufferedGenericBlockCipher(new CFBBlockCipher(baseEngine, 8 * baseEngine.getBlockSize()));
             }
         }
         /*
@@ -310,43 +259,28 @@ public class JCEBlockCipher extends WrapCipherSpi
             cipher = new AEADGenericBlockCipher(new GCMBlockCipher(baseEngine));
         }
         */
-        else
-        {
+        else {
             throw new NoSuchAlgorithmException("can't support mode " + mode);
         }
     }
 
-    protected void engineSetPadding(
-        String  padding) 
-    throws NoSuchPaddingException
-    {
-        String  paddingName = Strings.toUpperCase(padding);
+    protected void engineSetPadding(String padding) throws NoSuchPaddingException {
+        String paddingName = Strings.toUpperCase(padding);
 
-        if (paddingName.equals("NOPADDING"))
-        {
-            if (cipher.wrapOnNoPadding())
-            {
+        if (paddingName.equals("NOPADDING")) {
+            if (cipher.wrapOnNoPadding()) {
                 cipher = new BufferedGenericBlockCipher(new BufferedBlockCipher(cipher.getUnderlyingCipher()));
             }
-        }
-        else if (paddingName.equals("WITHCTS"))
-        {
+        } else if (paddingName.equals("WITHCTS")) {
             cipher = new BufferedGenericBlockCipher(new CTSBlockCipher(cipher.getUnderlyingCipher()));
-        }
-        else
-        {
+        } else {
             padded = true;
 
-            if (isAEADModeName(modeName))
-            {
+            if (isAEADModeName(modeName)) {
                 throw new NoSuchPaddingException("Only NoPadding can be used with AEAD modes.");
-            }
-            else if (paddingName.equals("PKCS5PADDING") || paddingName.equals("PKCS7PADDING"))
-            {
+            } else if (paddingName.equals("PKCS5PADDING") || paddingName.equals("PKCS7PADDING")) {
                 cipher = new BufferedGenericBlockCipher(cipher.getUnderlyingCipher());
-            }
-            else if (paddingName.equals("ZEROBYTEPADDING"))
-            {
+            } else if (paddingName.equals("ZEROBYTEPADDING")) {
                 cipher = new BufferedGenericBlockCipher(cipher.getUnderlyingCipher(), new ZeroBytePadding());
             }
             /*
@@ -367,103 +301,78 @@ public class JCEBlockCipher extends WrapCipherSpi
                 cipher = new BufferedGenericBlockCipher(cipher.getUnderlyingCipher(), new TBCPadding());
             }
             */
-            else
-            {
+            else {
                 throw new NoSuchPaddingException("Padding " + padding + " unknown.");
             }
         }
     }
 
-    protected void engineInit(
-        int                     opmode,
-        Key                     key,
-        AlgorithmParameterSpec  params,
-        SecureRandom            random) 
-        throws InvalidKeyException, InvalidAlgorithmParameterException
-    {
-        CipherParameters        param;
-        
+    protected void engineInit(int opmode,
+                              Key key,
+                              AlgorithmParameterSpec params,
+                              SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
+        CipherParameters param;
+
         this.pbeSpec = null;
         this.pbeAlgorithm = null;
         this.engineParams = null;
-        
+
         //
         // basic key check
         //
-        if (!(key instanceof SecretKey))
-        {
+        if (!(key instanceof SecretKey)) {
             throw new InvalidKeyException("Key for algorithm " + key.getAlgorithm() + " not suitable for symmetric enryption.");
         }
-        
+
         //
         // for RC5-64 we must have some default parameters
         //
-        if (params == null && baseEngine.getAlgorithmName().startsWith("RC5-64"))
-        {
+        if (params == null && baseEngine.getAlgorithmName().startsWith("RC5-64")) {
             throw new InvalidAlgorithmParameterException("RC5 requires an RC5ParametersSpec to be passed in.");
         }
 
         //
         // a note on iv's - if ivLength is zero the IV gets ignored (we don't use it).
         //
-        if (key instanceof JCEPBEKey)
-        {
-            JCEPBEKey   k = (JCEPBEKey)key;
-            
-            if (k.getOID() != null)
-            {
+        if (key instanceof JCEPBEKey) {
+            JCEPBEKey k = (JCEPBEKey) key;
+
+            if (k.getOID() != null) {
                 pbeAlgorithm = k.getOID().getId();
-            }
-            else
-            {
+            } else {
                 pbeAlgorithm = k.getAlgorithm();
             }
-            
-            if (k.getParam() != null)
-            {
+
+            if (k.getParam() != null) {
                 param = k.getParam();
                 pbeSpec = new PBEParameterSpec(k.getSalt(), k.getIterationCount());
-            }
-            else if (params instanceof PBEParameterSpec)
-            {
-                pbeSpec = (PBEParameterSpec)params;
+            } else if (params instanceof PBEParameterSpec) {
+                pbeSpec = (PBEParameterSpec) params;
                 param = PBE.Util.makePBEParameters(k, params, cipher.getUnderlyingCipher().getAlgorithmName());
-            }
-            else
-            {
+            } else {
                 throw new InvalidAlgorithmParameterException("PBE requires PBE parameters to be set.");
             }
 
-            if (param instanceof ParametersWithIV)
-            {
-                ivParam = (ParametersWithIV)param;
+            if (param instanceof ParametersWithIV) {
+                ivParam = (ParametersWithIV) param;
             }
-        }
-        else if (params == null)
-        {
+        } else if (params == null) {
             param = new KeyParameter(key.getEncoded());
-        }
-        else if (params instanceof IvParameterSpec)
-        {
-            if (ivLength != 0)
-            {
-                IvParameterSpec p = (IvParameterSpec)params;
+        } else if (params instanceof IvParameterSpec) {
+            if (ivLength != 0) {
+                IvParameterSpec p = (IvParameterSpec) params;
 
-                if (p.getIV().length != ivLength && !isAEADModeName(modeName))
-                {
+                if (p.getIV().length != ivLength && !isAEADModeName(modeName)) {
                     throw new InvalidAlgorithmParameterException("IV must be " + ivLength + " bytes long.");
                 }
 
                 param = new ParametersWithIV(new KeyParameter(key.getEncoded()), p.getIV());
-                ivParam = (ParametersWithIV)param;
-            }
-            else
-            {
-                if (modeName != null && modeName.equals("ECB"))
-                {
+                ivParam = (ParametersWithIV) param;
+            } else {
+                if (modeName != null && modeName.equals("ECB")) {
                     throw new InvalidAlgorithmParameterException("ECB mode does not use an IV");
                 }
-                
+
                 param = new KeyParameter(key.getEncoded());
             }
         }
@@ -526,139 +435,103 @@ public class JCEBlockCipher extends WrapCipherSpi
             }
         }
         */
-        else
-        {
+        else {
             throw new InvalidAlgorithmParameterException("unknown parameter type.");
         }
 
-        if ((ivLength != 0) && !(param instanceof ParametersWithIV))
-        {
-            SecureRandom    ivRandom = random;
+        if ((ivLength != 0) && !(param instanceof ParametersWithIV)) {
+            SecureRandom ivRandom = random;
 
-            if (ivRandom == null)
-            {
+            if (ivRandom == null) {
                 ivRandom = new SecureRandom();
             }
 
-            if ((opmode == Cipher.ENCRYPT_MODE) || (opmode == Cipher.WRAP_MODE))
-            {
-                byte[]  iv = new byte[ivLength];
+            if ((opmode == Cipher.ENCRYPT_MODE) || (opmode == Cipher.WRAP_MODE)) {
+                byte[] iv = new byte[ivLength];
 
                 ivRandom.nextBytes(iv);
                 param = new ParametersWithIV(param, iv);
-                ivParam = (ParametersWithIV)param;
-            }
-            else if (cipher.getUnderlyingCipher().getAlgorithmName().indexOf("PGPCFB") < 0)
-            {
+                ivParam = (ParametersWithIV) param;
+            } else if (cipher.getUnderlyingCipher().getAlgorithmName().indexOf("PGPCFB") < 0) {
                 throw new InvalidAlgorithmParameterException("no IV set when one expected");
             }
         }
 
-        if (random != null && padded)
-        {
+        if (random != null && padded) {
             param = new ParametersWithRandom(param, random);
         }
 
-        try
-        {
-            switch (opmode)
-            {
-            case Cipher.ENCRYPT_MODE:
-            case Cipher.WRAP_MODE:
-                cipher.init(true, param);
-                break;
-            case Cipher.DECRYPT_MODE:
-            case Cipher.UNWRAP_MODE:
-                cipher.init(false, param);
-                break;
-            default:
-                throw new InvalidParameterException("unknown opmode " + opmode + " passed");
+        try {
+            switch (opmode) {
+                case Cipher.ENCRYPT_MODE:
+                case Cipher.WRAP_MODE:
+                    cipher.init(true, param);
+                    break;
+                case Cipher.DECRYPT_MODE:
+                case Cipher.UNWRAP_MODE:
+                    cipher.init(false, param);
+                    break;
+                default:
+                    throw new InvalidParameterException("unknown opmode " + opmode + " passed");
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new InvalidKeyException(e.getMessage());
         }
     }
 
-    protected void engineInit(
-        int                 opmode,
-        Key                 key,
-        AlgorithmParameters params,
-        SecureRandom        random) 
-    throws InvalidKeyException, InvalidAlgorithmParameterException
-    {
-        AlgorithmParameterSpec  paramSpec = null;
+    protected void engineInit(int opmode,
+                              Key key,
+                              AlgorithmParameters params,
+                              SecureRandom random) throws InvalidKeyException, InvalidAlgorithmParameterException {
+        AlgorithmParameterSpec paramSpec = null;
 
-        if (params != null)
-        {
-            for (int i = 0; i != availableSpecs.length; i++)
-            {
-                try
-                {
+        if (params != null) {
+            for (int i = 0; i != availableSpecs.length; i++) {
+                try {
                     paramSpec = params.getParameterSpec(availableSpecs[i]);
                     break;
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     // try again if possible
                 }
             }
 
-            if (paramSpec == null)
-            {
+            if (paramSpec == null) {
                 throw new InvalidAlgorithmParameterException("can't handle parameter " + params.toString());
             }
         }
 
         engineInit(opmode, key, paramSpec, random);
-        
+
         engineParams = params;
     }
 
-    protected void engineInit(
-        int                 opmode,
-        Key                 key,
-        SecureRandom        random) 
-        throws InvalidKeyException
-    {
-        try
-        {
-            engineInit(opmode, key, (AlgorithmParameterSpec)null, random);
-        }
-        catch (InvalidAlgorithmParameterException e)
-        {
+    protected void engineInit(int opmode, Key key, SecureRandom random) throws InvalidKeyException {
+        try {
+            engineInit(opmode, key, (AlgorithmParameterSpec) null, random);
+        } catch (InvalidAlgorithmParameterException e) {
             throw new InvalidKeyException(e.getMessage());
         }
     }
 
-    protected byte[] engineUpdate(
-        byte[]  input,
-        int     inputOffset,
-        int     inputLen) 
-    {
-        int     length = cipher.getUpdateOutputSize(inputLen);
+    protected byte[] engineUpdate(byte[] input, int inputOffset, int inputLen) {
+        int length = cipher.getUpdateOutputSize(inputLen);
 
-        if (length > 0)
-        {
-                byte[]  out = new byte[length];
+        if (length > 0) {
+            byte[] out = new byte[length];
 
-                int len = cipher.processBytes(input, inputOffset, inputLen, out, 0);
+            int len = cipher.processBytes(input, inputOffset, inputLen, out, 0);
 
-                if (len == 0)
-                {
-                    return null;
-                }
-                else if (len != out.length)
-                {
-                    byte[]  tmp = new byte[len];
+            if (len == 0) {
+                return null;
+            } else if (len != out.length) {
+                byte[] tmp = new byte[len];
 
-                    System.arraycopy(out, 0, tmp, 0, len);
+                System.arraycopy(out, 0, tmp, 0, len);
 
-                    return tmp;
-                }
+                return tmp;
+            }
 
-                return out;
+            return out;
         }
 
         cipher.processBytes(input, inputOffset, inputLen, null, 0);
@@ -666,95 +539,62 @@ public class JCEBlockCipher extends WrapCipherSpi
         return null;
     }
 
-    protected int engineUpdate(
-        byte[]  input,
-        int     inputOffset,
-        int     inputLen,
-        byte[]  output,
-        int     outputOffset)
-        throws ShortBufferException
-    {
-        try
-        {
+    protected int engineUpdate(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException {
+        try {
             return cipher.processBytes(input, inputOffset, inputLen, output, outputOffset);
-        }
-        catch (DataLengthException e)
-        {
+        } catch (DataLengthException e) {
             throw new ShortBufferException(e.getMessage());
         }
     }
 
-    protected byte[] engineDoFinal(
-        byte[]  input,
-        int     inputOffset,
-        int     inputLen) 
-        throws IllegalBlockSizeException, BadPaddingException
-    {
-        int     len = 0;
-        byte[]  tmp = new byte[engineGetOutputSize(inputLen)];
+    protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen) throws IllegalBlockSizeException, BadPaddingException {
+        int len = 0;
+        byte[] tmp = new byte[engineGetOutputSize(inputLen)];
 
-        if (inputLen != 0)
-        {
+        if (inputLen != 0) {
             len = cipher.processBytes(input, inputOffset, inputLen, tmp, 0);
         }
 
-        try
-        {
+        try {
             len += cipher.doFinal(tmp, len);
-        }
-        catch (DataLengthException e)
-        {
+        } catch (DataLengthException e) {
             throw new IllegalBlockSizeException(e.getMessage());
-        }
-        catch (InvalidCipherTextException e)
-        {
+        } catch (InvalidCipherTextException e) {
             throw new BadPaddingException(e.getMessage());
         }
 
-        if (len == tmp.length)
-        {
+        if (len == tmp.length) {
             return tmp;
         }
 
-        byte[]  out = new byte[len];
+        byte[] out = new byte[len];
 
         System.arraycopy(tmp, 0, out, 0, len);
 
         return out;
     }
 
-    protected int engineDoFinal(
-        byte[]  input,
-        int     inputOffset,
-        int     inputLen,
-        byte[]  output,
-        int     outputOffset) 
-        throws IllegalBlockSizeException, BadPaddingException
-    {
-        int     len = 0;
+    protected int engineDoFinal(byte[] input,
+                                int inputOffset,
+                                int inputLen,
+                                byte[] output,
+                                int outputOffset) throws IllegalBlockSizeException, BadPaddingException {
+        int len = 0;
 
-        if (inputLen != 0)
-        {
-                len = cipher.processBytes(input, inputOffset, inputLen, output, outputOffset);
+        if (inputLen != 0) {
+            len = cipher.processBytes(input, inputOffset, inputLen, output, outputOffset);
         }
 
-        try
-        {
+        try {
             return (len + cipher.doFinal(output, outputOffset + len));
-        }
-        catch (DataLengthException e)
-        {
+        } catch (DataLengthException e) {
             throw new IllegalBlockSizeException(e.getMessage());
-        }
-        catch (InvalidCipherTextException e)
-        {
+        } catch (InvalidCipherTextException e) {
             throw new BadPaddingException(e.getMessage());
         }
     }
 
-    private boolean isAEADModeName(
-        String modeName)
-    {
+    private boolean isAEADModeName(String modeName) {
         return "CCM".equals(modeName) || "EAX".equals(modeName) || "GCM".equals(modeName);
     }
 
@@ -840,7 +680,7 @@ public class JCEBlockCipher extends WrapCipherSpi
         }
     }
     */
-    
+
     /**
      * SKIPJACK
      */
@@ -884,15 +724,37 @@ public class JCEBlockCipher extends WrapCipherSpi
     */
 
     /**
-     * Twofish
+     * PBEWithAES-CBC
      */
-    static public class Twofish
+    /*
+    static public class PBEWithAESCBC
         extends JCEBlockCipher
     {
-        public Twofish()
+        public PBEWithAESCBC()
         {
-            super(new TwofishEngine());
+            super(new CBCBlockCipher(new AESFastEngine()));
         }
+    }
+    */
+
+    static private interface GenericBlockCipher {
+        public void init(boolean forEncryption, CipherParameters params) throws IllegalArgumentException;
+
+        public boolean wrapOnNoPadding();
+
+        public String getAlgorithmName();
+
+        public BlockCipher getUnderlyingCipher();
+
+        public int getOutputSize(int len);
+
+        public int getUpdateOutputSize(int len);
+
+        public int processByte(byte in, byte[] out, int outOff) throws DataLengthException;
+
+        public int processBytes(byte[] in, int inOff, int len, byte[] out, int outOff) throws DataLengthException;
+
+        public int doFinal(byte[] out, int outOff) throws IllegalStateException, InvalidCipherTextException;
     }
 
     /**
@@ -950,6 +812,16 @@ public class JCEBlockCipher extends WrapCipherSpi
         }
     }
 	*/
+
+    /**
+     * Twofish
+     */
+    static public class Twofish extends JCEBlockCipher {
+        public Twofish() {
+            super(new TwofishEngine());
+        }
+    }
+
     /**
      * RC6
      */
@@ -1042,7 +914,7 @@ public class JCEBlockCipher extends WrapCipherSpi
     }
 
 
-    
+
     /**
      * CAST5
      */
@@ -1228,118 +1100,61 @@ public class JCEBlockCipher extends WrapCipherSpi
     /**
      * PBEWithSHAAndTwofish-CBC
      */
-    
-    static public class PBEWithSHAAndTwofish
-        extends JCEBlockCipher
-    {
-        public PBEWithSHAAndTwofish()
-        {
+
+    static public class PBEWithSHAAndTwofish extends JCEBlockCipher {
+        public PBEWithSHAAndTwofish() {
             super(new CBCBlockCipher(new TwofishEngine()));
         }
     }
 
-    /**
-     * PBEWithAES-CBC
-     */
-    /*
-    static public class PBEWithAESCBC
-        extends JCEBlockCipher
-    {
-        public PBEWithAESCBC()
-        {
-            super(new CBCBlockCipher(new AESFastEngine()));
-        }
-    }
-    */
-
-    static private interface GenericBlockCipher
-    {
-        public void init(boolean forEncryption, CipherParameters params)
-            throws IllegalArgumentException;
-
-        public boolean wrapOnNoPadding();
-
-        public String getAlgorithmName();
-
-        public BlockCipher getUnderlyingCipher();
-
-        public int getOutputSize(int len);
-
-        public int getUpdateOutputSize(int len);
-
-        public int processByte(byte in, byte[] out, int outOff)
-            throws DataLengthException;
-
-        public int processBytes(byte[] in, int inOff, int len, byte[] out, int outOff)
-            throws DataLengthException;
-
-        public int doFinal(byte[] out, int outOff)
-            throws IllegalStateException, InvalidCipherTextException;
-    }
-
-    private static class BufferedGenericBlockCipher
-        implements GenericBlockCipher
-    {
+    private static class BufferedGenericBlockCipher implements GenericBlockCipher {
         private BufferedBlockCipher cipher;
 
-        BufferedGenericBlockCipher(BufferedBlockCipher cipher)
-        {
+        BufferedGenericBlockCipher(BufferedBlockCipher cipher) {
             this.cipher = cipher;
         }
 
-        BufferedGenericBlockCipher(BlockCipher cipher)
-        {
+        BufferedGenericBlockCipher(BlockCipher cipher) {
             this.cipher = new PaddedBufferedBlockCipher(cipher);
         }
 
-        BufferedGenericBlockCipher(BlockCipher cipher, BlockCipherPadding padding)
-        {
+        BufferedGenericBlockCipher(BlockCipher cipher, BlockCipherPadding padding) {
             this.cipher = new PaddedBufferedBlockCipher(cipher, padding);
         }
 
-        public void init(boolean forEncryption, CipherParameters params)
-            throws IllegalArgumentException
-        {
+        public void init(boolean forEncryption, CipherParameters params) throws IllegalArgumentException {
             cipher.init(forEncryption, params);
         }
 
-        public boolean wrapOnNoPadding()
-        {
+        public boolean wrapOnNoPadding() {
             return !(cipher instanceof CTSBlockCipher);
         }
 
-        public String getAlgorithmName()
-        {
+        public String getAlgorithmName() {
             return cipher.getUnderlyingCipher().getAlgorithmName();
         }
 
-        public BlockCipher getUnderlyingCipher()
-        {
+        public BlockCipher getUnderlyingCipher() {
             return cipher.getUnderlyingCipher();
         }
 
-        public int getOutputSize(int len)
-        {
+        public int getOutputSize(int len) {
             return cipher.getOutputSize(len);
         }
 
-        public int getUpdateOutputSize(int len)
-        {
+        public int getUpdateOutputSize(int len) {
             return cipher.getUpdateOutputSize(len);
         }
 
-        public int processByte(byte in, byte[] out, int outOff) throws DataLengthException
-        {
+        public int processByte(byte in, byte[] out, int outOff) throws DataLengthException {
             return cipher.processByte(in, out, outOff);
         }
 
-        public int processBytes(byte[] in, int inOff, int len, byte[] out, int outOff) throws DataLengthException
-        {
+        public int processBytes(byte[] in, int inOff, int len, byte[] out, int outOff) throws DataLengthException {
             return cipher.processBytes(in, inOff, len, out, outOff);
         }
 
-        public int doFinal(byte[] out, int outOff) throws IllegalStateException, InvalidCipherTextException
-        {
+        public int doFinal(byte[] out, int outOff) throws IllegalStateException, InvalidCipherTextException {
             return cipher.doFinal(out, outOff);
         }
     }

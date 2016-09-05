@@ -22,25 +22,32 @@ package com.keepassdroid.database;
 import java.util.Date;
 
 public interface ITimeLogger {
-	Date getLastModificationTime();
-	void setLastModificationTime(Date date);
-	
-	Date getCreationTime();
-	void setCreationTime(Date date);
-	
-	Date getLastAccessTime();
-	void setLastAccessTime(Date date);
-	
-	Date getExpiryTime();
-	void setExpiryTime(Date date);
-	
-	boolean expires();
-	void setExpires(boolean exp);
-	
-	long getUsageCount();
-	void setUsageCount(long count);
-	
-	Date getLocationChanged();
-	void setLocationChanged(Date date);
+    Date getLastModificationTime();
+
+    void setLastModificationTime(Date date);
+
+    Date getCreationTime();
+
+    void setCreationTime(Date date);
+
+    Date getLastAccessTime();
+
+    void setLastAccessTime(Date date);
+
+    Date getExpiryTime();
+
+    void setExpiryTime(Date date);
+
+    boolean expires();
+
+    void setExpires(boolean exp);
+
+    long getUsageCount();
+
+    void setUsageCount(long count);
+
+    Date getLocationChanged();
+
+    void setLocationChanged(Date date);
 
 }

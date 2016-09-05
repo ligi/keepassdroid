@@ -19,29 +19,28 @@
  */
 package com.keepassdroid.compat;
 
+import android.app.Activity;
 import java.lang.reflect.Method;
 
-import android.app.Activity;
-
 public class ActivityCompat {
-	private static Method invalidateOptMenu;
-	
-	static {
-		try {
-			invalidateOptMenu = Activity.class.getMethod("invalidateOptionsMenu", (Class<Activity>[]) null);
-		} catch (Exception e) {
-			// Do nothing if method dosen't exist
-		}
-	}
-	
-	public static void invalidateOptionsMenu(Activity act) {
-		if (invalidateOptMenu != null) {
-			try {
-				invalidateOptMenu.invoke(act, (Object[]) null);
-			} catch (Exception e) {
-				// Do nothing
-			}
-		}
-	}
+    private static Method invalidateOptMenu;
+
+    static {
+        try {
+            invalidateOptMenu = Activity.class.getMethod("invalidateOptionsMenu", (Class<Activity>[]) null);
+        } catch (Exception e) {
+            // Do nothing if method dosen't exist
+        }
+    }
+
+    public static void invalidateOptionsMenu(Activity act) {
+        if (invalidateOptMenu != null) {
+            try {
+                invalidateOptMenu.invoke(act, (Object[]) null);
+            } catch (Exception e) {
+                // Do nothing
+            }
+        }
+    }
 
 }

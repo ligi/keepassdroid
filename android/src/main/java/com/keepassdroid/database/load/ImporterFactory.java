@@ -19,36 +19,33 @@
  */
 package com.keepassdroid.database.load;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.keepassdroid.database.PwDbHeaderV3;
 import com.keepassdroid.database.PwDbHeaderV4;
 import com.keepassdroid.database.exception.InvalidDBSignatureException;
 import com.keepassdroid.stream.LEDataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ImporterFactory {
-	public static Importer createImporter(InputStream is) throws InvalidDBSignatureException, IOException
-	{
-		return createImporter(is, false);
-	}
+    public static Importer createImporter(InputStream is) throws InvalidDBSignatureException, IOException {
+        return createImporter(is, false);
+    }
 
-	public static Importer createImporter(InputStream is, boolean debug) throws InvalidDBSignatureException, IOException
-	{
-		int sig1 = LEDataInputStream.readInt(is);
-		int sig2 = LEDataInputStream.readInt(is);
-		
-		if ( PwDbHeaderV3.matchesHeader(sig1, sig2) ) {
-			if (debug) {
-				return new ImporterV3Debug();
-			}
-			
-			return new ImporterV3();
-		} else if ( PwDbHeaderV4.matchesHeader(sig1, sig2) ) {
-			return new ImporterV4();
-		}
+    public static Importer createImporter(InputStream is, boolean debug) throws InvalidDBSignatureException, IOException {
+        int sig1 = LEDataInputStream.readInt(is);
+        int sig2 = LEDataInputStream.readInt(is);
 
-		throw new InvalidDBSignatureException();
-		
-	}
+        if (PwDbHeaderV3.matchesHeader(sig1, sig2)) {
+            if (debug) {
+                return new ImporterV3Debug();
+            }
+
+            return new ImporterV3();
+        } else if (PwDbHeaderV4.matchesHeader(sig1, sig2)) {
+            return new ImporterV4();
+        }
+
+        throw new InvalidDBSignatureException();
+
+    }
 }

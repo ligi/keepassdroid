@@ -21,15 +21,21 @@ package com.keepassdroid.database;
 
 public abstract class PwDbHeader {
 
-	public static final int PWM_DBSIG_1 = 0x9AA2D903;
+    public static final int PWM_DBSIG_1 = 0x9AA2D903;
 
-	/** Seed that gets hashed with the userkey to form the final key */
-	public byte masterSeed[];
+    /**
+     * Seed that gets hashed with the userkey to form the final key
+     */
+    public byte masterSeed[];
 
-	/** Used for the dwKeyEncRounds AES transformations */
-	public byte transformSeed[] = new byte[32];
+    /**
+     * Used for the dwKeyEncRounds AES transformations
+     */
+    public byte transformSeed[] = new byte[32];
 
-	/** IV used for content encryption */
-	public byte encryptionIV[] = new byte[16];
-	
+    /**
+     * IV used for content encryption
+     */
+    public byte encryptionIV[] = new byte[16];
+
 }

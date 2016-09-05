@@ -19,12 +19,6 @@
  */
 package com.keepassdroid.database.save;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import com.keepassdroid.database.PwDatabaseV4;
 import com.keepassdroid.database.PwDbHeader;
 import com.keepassdroid.database.PwDbHeaderV4;
@@ -32,60 +26,64 @@ import com.keepassdroid.database.PwDbHeaderV4.PwDbHeaderV4Fields;
 import com.keepassdroid.database.exception.PwDbOutputException;
 import com.keepassdroid.stream.LEDataOutputStream;
 import com.keepassdroid.utils.Types;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class PwDbHeaderOutputV4 extends PwDbHeaderOutput {
-	private PwDbHeaderV4 header;
-	private LEDataOutputStream los;
-	private DigestOutputStream dos;
-	private PwDatabaseV4 db;
-	
-	private static byte[] EndHeaderValue = {'\r', '\n', '\r', '\n'};
-	
-	public PwDbHeaderOutputV4(PwDatabaseV4 d, PwDbHeaderV4 h, OutputStream os) throws PwDbOutputException {
-		db = d;
-		header = h;
-		
-		MessageDigest md = null;
-		try {
-			md = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e) {
-			throw new PwDbOutputException("SHA-256 not implemented here.");
-		}
-		
-		dos = new DigestOutputStream(os, md);
-		los = new LEDataOutputStream(dos);
-	}
-	
-	public void output() throws IOException {
-		los.writeUInt(PwDbHeader.PWM_DBSIG_1);
-		los.writeUInt(PwDbHeaderV4.DBSIG_2);
-		los.writeUInt(PwDbHeaderV4.FILE_VERSION_32);
-		
-		writeHeaderField(PwDbHeaderV4Fields.CipherID, Types.UUIDtoBytes(db.dataCipher));
-		writeHeaderField(PwDbHeaderV4Fields.CompressionFlags, LEDataOutputStream.writeIntBuf(db.compressionAlgorithm.id));
-		writeHeaderField(PwDbHeaderV4Fields.MasterSeed, header.masterSeed);
-		writeHeaderField(PwDbHeaderV4Fields.TransformSeed, header.transformSeed);
-		writeHeaderField(PwDbHeaderV4Fields.TransformRounds, LEDataOutputStream.writeLongBuf(db.numKeyEncRounds));
-		writeHeaderField(PwDbHeaderV4Fields.EncryptionIV, header.encryptionIV);
-		writeHeaderField(PwDbHeaderV4Fields.ProtectedStreamKey, header.protectedStreamKey);
-		writeHeaderField(PwDbHeaderV4Fields.StreamStartBytes, header.streamStartBytes);
-		writeHeaderField(PwDbHeaderV4Fields.InnerRandomStreamID, LEDataOutputStream.writeIntBuf(header.innerRandomStream.id));
-		writeHeaderField(PwDbHeaderV4Fields.EndOfHeader, EndHeaderValue);
-		
-		los.flush();
-		hashOfHeader = dos.getMessageDigest().digest();
-	}
-	
-	private void writeHeaderField(byte fieldId, byte[] pbData) throws IOException {
-		// Write the field id
-		los.write(fieldId);
-		
-		if (pbData != null) {
-			los.writeUShort(pbData.length);
-			los.write(pbData);
-		} else {
-			los.writeUShort(0);
-		}
-	}
-	
+    private static byte[] EndHeaderValue = {'\r', '\n', '\r', '\n'};
+    private PwDbHeaderV4 header;
+    private LEDataOutputStream los;
+    private DigestOutputStream dos;
+    private PwDatabaseV4 db;
+
+    public PwDbHeaderOutputV4(PwDatabaseV4 d, PwDbHeaderV4 h, OutputStream os) throws PwDbOutputException {
+        db = d;
+        header = h;
+
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new PwDbOutputException("SHA-256 not implemented here.");
+        }
+
+        dos = new DigestOutputStream(os, md);
+        los = new LEDataOutputStream(dos);
+    }
+
+    public void output() throws IOException {
+        los.writeUInt(PwDbHeader.PWM_DBSIG_1);
+        los.writeUInt(PwDbHeaderV4.DBSIG_2);
+        los.writeUInt(PwDbHeaderV4.FILE_VERSION_32);
+
+        writeHeaderField(PwDbHeaderV4Fields.CipherID, Types.UUIDtoBytes(db.dataCipher));
+        writeHeaderField(PwDbHeaderV4Fields.CompressionFlags, LEDataOutputStream.writeIntBuf(db.compressionAlgorithm.id));
+        writeHeaderField(PwDbHeaderV4Fields.MasterSeed, header.masterSeed);
+        writeHeaderField(PwDbHeaderV4Fields.TransformSeed, header.transformSeed);
+        writeHeaderField(PwDbHeaderV4Fields.TransformRounds, LEDataOutputStream.writeLongBuf(db.numKeyEncRounds));
+        writeHeaderField(PwDbHeaderV4Fields.EncryptionIV, header.encryptionIV);
+        writeHeaderField(PwDbHeaderV4Fields.ProtectedStreamKey, header.protectedStreamKey);
+        writeHeaderField(PwDbHeaderV4Fields.StreamStartBytes, header.streamStartBytes);
+        writeHeaderField(PwDbHeaderV4Fields.InnerRandomStreamID, LEDataOutputStream.writeIntBuf(header.innerRandomStream.id));
+        writeHeaderField(PwDbHeaderV4Fields.EndOfHeader, EndHeaderValue);
+
+        los.flush();
+        hashOfHeader = dos.getMessageDigest().digest();
+    }
+
+    private void writeHeaderField(byte fieldId, byte[] pbData) throws IOException {
+        // Write the field id
+        los.write(fieldId);
+
+        if (pbData != null) {
+            los.writeUShort(pbData.length);
+            los.write(pbData);
+        } else {
+            los.writeUShort(0);
+        }
+    }
+
 }

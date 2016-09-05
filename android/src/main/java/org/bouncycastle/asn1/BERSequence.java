@@ -4,56 +4,42 @@ import java.io.IOException;
 import java.util.Enumeration;
 
 @SuppressWarnings("unchecked")
-public class BERSequence
-    extends DERSequence
-{
+public class BERSequence extends DERSequence {
     /**
      * create an empty sequence
      */
-    public BERSequence()
-    {
+    public BERSequence() {
     }
 
     /**
      * create a sequence containing one object
      */
-    public BERSequence(
-        DEREncodable    obj)
-    {
+    public BERSequence(DEREncodable obj) {
         super(obj);
     }
 
     /**
      * create a sequence containing a vector of objects.
      */
-    public BERSequence(
-        DEREncodableVector   v)
-    {
+    public BERSequence(DEREncodableVector v) {
         super(v);
     }
 
     /*
      */
-    void encode(
-        DEROutputStream out)
-        throws IOException
-    {
-        if (out instanceof ASN1OutputStream || out instanceof BEROutputStream)
-        {
+    void encode(DEROutputStream out) throws IOException {
+        if (out instanceof ASN1OutputStream || out instanceof BEROutputStream) {
             out.write(SEQUENCE | CONSTRUCTED);
             out.write(0x80);
-            
+
             Enumeration e = getObjects();
-            while (e.hasMoreElements())
-            {
+            while (e.hasMoreElements()) {
                 out.writeObject(e.nextElement());
             }
-        
+
             out.write(0x00);
             out.write(0x00);
-        }
-        else
-        {
+        } else {
             super.encode(out);
         }
     }

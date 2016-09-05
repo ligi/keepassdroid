@@ -20,35 +20,35 @@
 package com.keepassdroid.database.security;
 
 public class ProtectedString {
-	
-	private String string;
-	private boolean protect;
-	
-	public boolean isProtected() {
-		return protect;
-	}
-	
-	public int length() {
-		if (string == null) {
-			return 0;
-		}
-		
-		return string.length();
-	}
-	
-	public ProtectedString() {
-		this(false, "");
-		
-	}
-	
-	public ProtectedString(boolean enableProtection, String string) {
-		protect = enableProtection;
-		this.string = string;
-		
-	}
-	
-	public String toString() {
-		return string;
-	}
+
+    private String string;
+    private boolean protect;
+
+    public ProtectedString() {
+        this(false, "");
+
+    }
+
+    public ProtectedString(boolean enableProtection, String string) {
+        protect = enableProtection;
+        this.string = string;
+
+    }
+
+    public boolean isProtected() {
+        return protect;
+    }
+
+    public int length() {
+        if (string == null) {
+            return 0;
+        }
+
+        return string.length();
+    }
+
+    public String toString() {
+        return string;
+    }
 
 }

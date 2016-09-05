@@ -19,28 +19,27 @@
  */
 package com.keepassdroid.utils;
 
+import com.keepassdroid.database.PwDatabaseV4;
+import com.keepassdroid.database.PwEntryV4;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.keepassdroid.database.PwDatabaseV4;
-import com.keepassdroid.database.PwEntryV4;
-
 public class SprContextV4 implements Cloneable {
-	public PwDatabaseV4 db;
-	public PwEntryV4 entry;
-	public Map<String, String> refsCache = new HashMap<String, String>();
-	
-	public SprContextV4(PwDatabaseV4 db, PwEntryV4 entry) {
-		this.db = db;
-		this.entry = entry;
-	}
+    public PwDatabaseV4 db;
+    public PwEntryV4 entry;
+    public Map<String, String> refsCache = new HashMap<String, String>();
 
-	@Override
-	protected Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
-	}
+    public SprContextV4(PwDatabaseV4 db, PwEntryV4 entry) {
+        this.db = db;
+        this.entry = entry;
+    }
+
+    @Override
+    protected Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
 }

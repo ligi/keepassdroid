@@ -19,65 +19,61 @@
 */
 package com.keepassdroid.tests.crypto;
 
-import static org.junit.Assert.assertArrayEquals;
-
+import com.keepassdroid.crypto.CipherFactory;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
 import junit.framework.TestCase;
-
-import com.keepassdroid.crypto.CipherFactory;
+import static org.junit.Assert.assertArrayEquals;
 
 public class AESTest extends TestCase {
-	
-	private Random mRand = new Random();
-	
-	public void testEncrypt() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
-		// Test above below and at the blocksize
-		testFinal(15);
-		testFinal(16);
-		testFinal(17);
-		
-		// Test random larger sizes
-		int size = mRand.nextInt(494) + 18;
-		testFinal(size);
-	}
-	
-	private void testFinal(int dataSize) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
-		
-		// Generate some input
-		byte[] input = new byte[dataSize];
-		mRand.nextBytes(input);
-		
-		// Generate key
-		byte[] keyArray = new byte[32];
-		mRand.nextBytes(keyArray);
-		SecretKeySpec key = new SecretKeySpec(keyArray, "AES");
-		
-		// Generate IV
-		byte[] ivArray = new byte[16];
-		mRand.nextBytes(ivArray);
-		IvParameterSpec iv = new IvParameterSpec(ivArray);
-		
-		Cipher android = CipherFactory.getInstance("AES/CBC/PKCS5Padding", true);
-		android.init(Cipher.ENCRYPT_MODE, key, iv);
-		byte[] outAndroid = android.doFinal(input, 0, dataSize);
-		
-		Cipher nat = CipherFactory.getInstance("AES/CBC/PKCS5Padding");
-		nat.init(Cipher.ENCRYPT_MODE, key, iv);
-		byte[] outNative = nat.doFinal(input, 0, dataSize);
-		
-		assertArrayEquals("Arrays differ on size: " + dataSize, outAndroid, outNative);
-	}
-	
-	
+
+    private Random mRand = new Random();
+
+    public void testEncrypt() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+        // Test above below and at the blocksize
+        testFinal(15);
+        testFinal(16);
+        testFinal(17);
+
+        // Test random larger sizes
+        int size = mRand.nextInt(494) + 18;
+        testFinal(size);
+    }
+
+    private void testFinal(int dataSize) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+
+        // Generate some input
+        byte[] input = new byte[dataSize];
+        mRand.nextBytes(input);
+
+        // Generate key
+        byte[] keyArray = new byte[32];
+        mRand.nextBytes(keyArray);
+        SecretKeySpec key = new SecretKeySpec(keyArray, "AES");
+
+        // Generate IV
+        byte[] ivArray = new byte[16];
+        mRand.nextBytes(ivArray);
+        IvParameterSpec iv = new IvParameterSpec(ivArray);
+
+        Cipher android = CipherFactory.getInstance("AES/CBC/PKCS5Padding", true);
+        android.init(Cipher.ENCRYPT_MODE, key, iv);
+        byte[] outAndroid = android.doFinal(input, 0, dataSize);
+
+        Cipher nat = CipherFactory.getInstance("AES/CBC/PKCS5Padding");
+        nat.init(Cipher.ENCRYPT_MODE, key, iv);
+        byte[] outNative = nat.doFinal(input, 0, dataSize);
+
+        assertArrayEquals("Arrays differ on size: " + dataSize, outAndroid, outNative);
+    }
+
+
 }

@@ -5,14 +5,11 @@ package org.bouncycastle.crypto;
  * or similar after x amount of bytes enciphered
  */
 @SuppressWarnings("serial")
-public class MaxBytesExceededException
-    extends RuntimeCryptoException
-{
+public class MaxBytesExceededException extends RuntimeCryptoException {
     /**
      * base constructor.
      */
-    public MaxBytesExceededException()
-    {
+    public MaxBytesExceededException() {
     }
 
     /**
@@ -20,9 +17,7 @@ public class MaxBytesExceededException
      *
      * @param message the message to be carried with the exception.
      */
-    public MaxBytesExceededException(
-        String  message)
-    {
+    public MaxBytesExceededException(String message) {
         super(message);
     }
 }

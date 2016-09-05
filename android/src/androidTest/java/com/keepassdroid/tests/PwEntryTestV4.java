@@ -19,48 +19,46 @@
  */
 package com.keepassdroid.tests;
 
-import java.util.UUID;
-
-import junit.framework.TestCase;
-
 import com.keepassdroid.database.PwEntryV4;
 import com.keepassdroid.database.PwGroupV4;
 import com.keepassdroid.database.PwIconCustom;
 import com.keepassdroid.database.PwIconStandard;
 import com.keepassdroid.database.security.ProtectedBinary;
 import com.keepassdroid.database.security.ProtectedString;
+import java.util.UUID;
+import junit.framework.TestCase;
 
 public class PwEntryTestV4 extends TestCase {
-	public void testAssign() {
-		PwEntryV4 entry = new PwEntryV4();
-		
-		entry.additional = "test223";
-		
-		entry.autoType = entry.new AutoType();
-		entry.autoType.defaultSequence = "1324";
-		entry.autoType.enabled = true;
-		entry.autoType.obfuscationOptions = 123412432109L;
-		entry.autoType.put("key", "value");
-		
-		entry.backgroupColor = "blue";
-		entry.binaries.put("key1", new ProtectedBinary(false, new byte[] {0,1}));
-		entry.customIcon = new PwIconCustom(UUID.randomUUID(), new byte[0]);
-		entry.foregroundColor = "red";
-		entry.history.add(new PwEntryV4());
-		entry.icon = new PwIconStandard(5);
-		entry.overrideURL = "override";
-		entry.parent = new PwGroupV4();
-		entry.strings.put("key2", new ProtectedString(false, "value2"));
-		entry.url = "http://localhost";
-		entry.uuid = UUID.randomUUID();
+    public void testAssign() {
+        PwEntryV4 entry = new PwEntryV4();
 
-		PwEntryV4 target = new PwEntryV4();
-		target.assign(entry);
-		
+        entry.additional = "test223";
+
+        entry.autoType = entry.new AutoType();
+        entry.autoType.defaultSequence = "1324";
+        entry.autoType.enabled = true;
+        entry.autoType.obfuscationOptions = 123412432109L;
+        entry.autoType.put("key", "value");
+
+        entry.backgroupColor = "blue";
+        entry.binaries.put("key1", new ProtectedBinary(false, new byte[]{0, 1}));
+        entry.customIcon = new PwIconCustom(UUID.randomUUID(), new byte[0]);
+        entry.foregroundColor = "red";
+        entry.history.add(new PwEntryV4());
+        entry.icon = new PwIconStandard(5);
+        entry.overrideURL = "override";
+        entry.parent = new PwGroupV4();
+        entry.strings.put("key2", new ProtectedString(false, "value2"));
+        entry.url = "http://localhost";
+        entry.uuid = UUID.randomUUID();
+
+        PwEntryV4 target = new PwEntryV4();
+        target.assign(entry);
+
 		/* This test is not so useful now that I am not implementing value equality for Entries
 		assertTrue("Entries do not match.", entry.equals(target));
 		*/
-		
-	}
+
+    }
 
 }

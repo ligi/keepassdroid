@@ -19,25 +19,25 @@
  */
 package com.keepassdroid.database.load;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.keepassdroid.UpdateStatus;
 import com.keepassdroid.database.PwDatabaseV4Debug;
 import com.keepassdroid.database.exception.InvalidDBException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ImporterV4Debug extends ImporterV4 {
 
-	@Override
-	protected PwDatabaseV4Debug createDB() {
-		return new PwDatabaseV4Debug();
-	}
+    @Override
+    protected PwDatabaseV4Debug createDB() {
+        return new PwDatabaseV4Debug();
+    }
 
-	@Override
-	public PwDatabaseV4Debug openDatabase(InputStream inStream, String password,
-			InputStream keyInputFile, UpdateStatus status) throws IOException,
-			InvalidDBException {
-		return (PwDatabaseV4Debug) super.openDatabase(inStream, password, keyInputFile, status);
-	}
+    @Override
+    public PwDatabaseV4Debug openDatabase(InputStream inStream,
+                                          String password,
+                                          InputStream keyInputFile,
+                                          UpdateStatus status) throws IOException, InvalidDBException {
+        return (PwDatabaseV4Debug) super.openDatabase(inStream, password, keyInputFile, status);
+    }
 
 }

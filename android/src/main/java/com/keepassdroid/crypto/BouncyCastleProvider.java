@@ -22,15 +22,15 @@ package com.keepassdroid.crypto;
 import java.security.Provider;
 
 public class BouncyCastleProvider extends Provider {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6705090615178002994L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -6705090615178002994L;
 
-	public BouncyCastleProvider() {
-		super("BouncyCastleProvider", 1.0, "");
+    public BouncyCastleProvider() {
+        super("BouncyCastleProvider", 1.0, "");
 
-		put("Cipher.TWOFISH", org.bouncycastle.jce.provider.JCEBlockCipher.Twofish.class.getName());
-	}
+        put("Cipher.TWOFISH", org.bouncycastle.jce.provider.JCEBlockCipher.Twofish.class.getName());
+    }
 
 }

@@ -20,8 +20,10 @@
 package com.keepassdroid.database.save;
 
 public class PwDbHeaderOutput {
-	protected byte[] hashOfHeader = null;
+    protected byte[] hashOfHeader = null;
 
-	public byte[] getHashOfHeader() { return hashOfHeader; }
-	
+    public byte[] getHashOfHeader() {
+        return hashOfHeader;
+    }
+
 }

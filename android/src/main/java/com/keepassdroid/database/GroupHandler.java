@@ -20,11 +20,12 @@
 package com.keepassdroid.database;
 
 
-/** "Delegate" class for operating on each group when traversing all of
+/**
+ * "Delegate" class for operating on each group when traversing all of
  * them
- * @author bpellin
  *
+ * @author bpellin
  */
 public abstract class GroupHandler<T> {
-	public abstract boolean operate(T entry);
+    public abstract boolean operate(T entry);
 }

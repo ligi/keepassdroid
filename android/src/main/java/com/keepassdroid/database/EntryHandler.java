@@ -19,12 +19,13 @@
  */
 package com.keepassdroid.database;
 
-/** "Delegate" class for operating on each entry when traversing all of
+/**
+ * "Delegate" class for operating on each entry when traversing all of
  * them
- * @author bpellin
  *
+ * @author bpellin
  */
 public abstract class EntryHandler<T extends PwEntry> {
-	public abstract boolean operate(T entry);
+    public abstract boolean operate(T entry);
 }
-	
+

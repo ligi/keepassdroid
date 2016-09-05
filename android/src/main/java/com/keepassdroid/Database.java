@@ -19,23 +19,9 @@
  */
 package com.keepassdroid;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.SyncFailedException;
-import java.util.HashSet;
-import java.util.Set;
-
-import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-
 import com.keepassdroid.database.PwDatabase;
 import com.keepassdroid.database.PwDatabaseV3;
 import com.keepassdroid.database.PwGroup;
@@ -46,6 +32,16 @@ import com.keepassdroid.database.load.Importer;
 import com.keepassdroid.database.load.ImporterFactory;
 import com.keepassdroid.database.save.PwDbOutput;
 import com.keepassdroid.utils.UriUtil;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.SyncFailedException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author bpellin
@@ -77,11 +73,20 @@ public class Database {
         LoadData(ctx, uri, password, keyfile, new UpdateStatus(), !Importer.DEBUG);
     }
 
-    public void LoadData(Context ctx, Uri uri, String password, Uri keyfile, UpdateStatus status) throws IOException, FileNotFoundException, InvalidDBException {
+    public void LoadData(Context ctx,
+                         Uri uri,
+                         String password,
+                         Uri keyfile,
+                         UpdateStatus status) throws IOException, FileNotFoundException, InvalidDBException {
         LoadData(ctx, uri, password, keyfile, status, !Importer.DEBUG);
     }
 
-    public void LoadData(Context ctx, Uri uri, String password, Uri keyfile, UpdateStatus status, boolean debug) throws IOException, FileNotFoundException, InvalidDBException {
+    public void LoadData(Context ctx,
+                         Uri uri,
+                         String password,
+                         Uri keyfile,
+                         UpdateStatus status,
+                         boolean debug) throws IOException, FileNotFoundException, InvalidDBException {
         mUri = uri;
         readOnly = false;
         if (uri.getScheme().equals("file")) {
@@ -111,11 +116,16 @@ public class Database {
         LoadData(ctx, is, password, kfIs, new UpdateStatus(), debug);
     }
 
-    public void LoadData(Context ctx, InputStream is, String password, InputStream kfIs, UpdateStatus status, boolean debug) throws IOException, InvalidDBException {
+    public void LoadData(Context ctx,
+                         InputStream is,
+                         String password,
+                         InputStream kfIs,
+                         UpdateStatus status,
+                         boolean debug) throws IOException, InvalidDBException {
 
         BufferedInputStream bis = new BufferedInputStream(is);
 
-        if ( ! bis.markSupported() ) {
+        if (!bis.markSupported()) {
             throw new IOException("Input stream does not support mark.");
         }
 
@@ -127,7 +137,7 @@ public class Database {
         bis.reset();  // Return to the start
 
         pm = imp.openDatabase(bis, password, kfIs, status);
-        if ( pm != null ) {
+        if (pm != null) {
             PwGroup root = pm.rootGroup;
 
             pm.populateGlobals(root);
@@ -139,7 +149,7 @@ public class Database {
     }
 
     public void LoadData(Context ctx, PwDatabase pm, String password, InputStream keyInputStream, UpdateStatus status) {
-        if ( pm != null ) {
+        if (pm != null) {
             passwordEncodingError = !pm.validatePasswordEncoding(password);
         }
 
@@ -176,8 +186,7 @@ public class Database {
             if (!tempFile.renameTo(orig)) {
                 throw new IOException("Failed to store database.");
             }
-        }
-        else {
+        } else {
             OutputStream os;
             try {
                 os = ctx.getContentResolver().openOutputStream(uri);
@@ -204,13 +213,13 @@ public class Database {
     }
 
     public void markAllGroupsAsDirty() {
-        for ( PwGroup group : pm.getGroups() ) {
+        for (PwGroup group : pm.getGroups()) {
             dirty.add(group);
         }
 
         // TODO: This should probably be abstracted out
         // The root group in v3 is not an 'official' group
-        if ( pm instanceof PwDatabaseV3 ) {
+        if (pm instanceof PwDatabaseV3) {
             dirty.add(pm.rootGroup);
         }
     }

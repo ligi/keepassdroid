@@ -19,29 +19,28 @@
  */
 package com.keepassdroid.crypto.finalkey;
 
-import java.io.IOException;
-
 import com.keepassdroid.crypto.NativeLib;
+import java.io.IOException;
 
 
 public class NativeFinalKey extends FinalKey {
-	
-	public static boolean availble() {
-		return NativeLib.init();
-	}
 
-	@Override
-	public byte[] transformMasterKey(byte[] seed, byte[] key, int rounds) throws IOException {
-		NativeLib.init();
-		
-		return nTransformMasterKey(seed, key, rounds);
+    public static boolean availble() {
+        return NativeLib.init();
+    }
 
-	}
-	
-	private static native byte[] nTransformMasterKey(byte[] seed, byte[] key, int rounds);
+    private static native byte[] nTransformMasterKey(byte[] seed, byte[] key, int rounds);
 
-	// For testing
-	/*
+    @Override
+    public byte[] transformMasterKey(byte[] seed, byte[] key, int rounds) throws IOException {
+        NativeLib.init();
+
+        return nTransformMasterKey(seed, key, rounds);
+
+    }
+
+    // For testing
+    /*
 	public static byte[] reflect(byte[] key) {
 		NativeLib.init();
 		
@@ -50,6 +49,6 @@ public class NativeFinalKey extends FinalKey {
 	
 	private static native byte[] nativeReflect(byte[] key);
 	*/
-	
+
 
 }

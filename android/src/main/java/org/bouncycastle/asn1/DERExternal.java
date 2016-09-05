@@ -6,42 +6,35 @@ import java.io.IOException;
 /**
  * Class representing the DER-type External
  */
-public class DERExternal
-    extends ASN1Object
-{
+public class DERExternal extends ASN1Object {
     private DERObjectIdentifier directReference;
     private DERInteger indirectReference;
     private ASN1Object dataValueDescriptor;
     private int encoding;
     private DERObject externalContent;
-    
-    public DERExternal(ASN1EncodableVector vector)
-    {
+
+    public DERExternal(ASN1EncodableVector vector) {
         int offset = 0;
         DERObject enc = vector.get(offset).getDERObject();
-        if (enc instanceof DERObjectIdentifier)
-        {
-            directReference = (DERObjectIdentifier)enc;
+        if (enc instanceof DERObjectIdentifier) {
+            directReference = (DERObjectIdentifier) enc;
             offset++;
             enc = vector.get(offset).getDERObject();
         }
-        if (enc instanceof DERInteger)
-        {
+        if (enc instanceof DERInteger) {
             indirectReference = (DERInteger) enc;
             offset++;
             enc = vector.get(offset).getDERObject();
         }
-        if (!(enc instanceof DERTaggedObject))
-        {
+        if (!(enc instanceof DERTaggedObject)) {
             dataValueDescriptor = (ASN1Object) enc;
             offset++;
             enc = vector.get(offset).getDERObject();
         }
-        if (!(enc instanceof DERTaggedObject))
-        {
+        if (!(enc instanceof DERTaggedObject)) {
             throw new IllegalArgumentException("No tagged object found in vector. Structure doesn't seem to be of type External");
         }
-        DERTaggedObject obj = (DERTaggedObject)enc;
+        DERTaggedObject obj = (DERTaggedObject) enc;
         setEncoding(obj.getTagNo());
         externalContent = obj.getObject();
     }
@@ -49,27 +42,31 @@ public class DERExternal
     /**
      * Creates a new instance of DERExternal
      * See X.690 for more informations about the meaning of these parameters
-     * @param directReference The direct reference or <code>null</code> if not set.
-     * @param indirectReference The indirect reference or <code>null</code> if not set.
+     *
+     * @param directReference     The direct reference or <code>null</code> if not set.
+     * @param indirectReference   The indirect reference or <code>null</code> if not set.
      * @param dataValueDescriptor The data value descriptor or <code>null</code> if not set.
-     * @param externalData The external data in its encoded form.
+     * @param externalData        The external data in its encoded form.
      */
-    public DERExternal(DERObjectIdentifier directReference, DERInteger indirectReference, ASN1Object dataValueDescriptor, DERTaggedObject externalData)
-    {
+    public DERExternal(DERObjectIdentifier directReference, DERInteger indirectReference, ASN1Object dataValueDescriptor, DERTaggedObject externalData) {
         this(directReference, indirectReference, dataValueDescriptor, externalData.getTagNo(), externalData.getDERObject());
     }
 
     /**
      * Creates a new instance of DERExternal.
      * See X.690 for more informations about the meaning of these parameters
-     * @param directReference The direct reference or <code>null</code> if not set.
-     * @param indirectReference The indirect reference or <code>null</code> if not set.
+     *
+     * @param directReference     The direct reference or <code>null</code> if not set.
+     * @param indirectReference   The indirect reference or <code>null</code> if not set.
      * @param dataValueDescriptor The data value descriptor or <code>null</code> if not set.
-     * @param encoding The encoding to be used for the external data
-     * @param externalData The external data
+     * @param encoding            The encoding to be used for the external data
+     * @param externalData        The external data
      */
-    public DERExternal(DERObjectIdentifier directReference, DERInteger indirectReference, ASN1Object dataValueDescriptor, int encoding, DERObject externalData)
-    {
+    public DERExternal(DERObjectIdentifier directReference,
+                       DERInteger indirectReference,
+                       ASN1Object dataValueDescriptor,
+                       int encoding,
+                       DERObject externalData) {
         setDirectReference(directReference);
         setIndirectReference(indirectReference);
         setDataValueDescriptor(dataValueDescriptor);
@@ -80,19 +77,15 @@ public class DERExternal
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
-    public int hashCode()
-    {
+    public int hashCode() {
         int ret = 0;
-        if (directReference != null)
-        {
+        if (directReference != null) {
             ret = directReference.hashCode();
         }
-        if (indirectReference != null)
-        {
+        if (indirectReference != null) {
             ret ^= indirectReference.hashCode();
         }
-        if (dataValueDescriptor != null)
-        {
+        if (dataValueDescriptor != null) {
             ret ^= dataValueDescriptor.hashCode();
         }
         ret ^= externalContent.hashCode();
@@ -102,20 +95,15 @@ public class DERExternal
     /* (non-Javadoc)
      * @see org.bouncycastle.asn1.DERObject#encode(org.bouncycastle.asn1.DEROutputStream)
      */
-    void encode(DEROutputStream out)
-        throws IOException
-    {
+    void encode(DEROutputStream out) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        if (directReference != null)
-        {
+        if (directReference != null) {
             baos.write(directReference.getDEREncoded());
         }
-        if (indirectReference != null)
-        {
+        if (indirectReference != null) {
             baos.write(indirectReference.getDEREncoded());
         }
-        if (dataValueDescriptor != null)
-        {
+        if (dataValueDescriptor != null) {
             baos.write(dataValueDescriptor.getDEREncoded());
         }
         DERTaggedObject obj = new DERTaggedObject(encoding, externalContent);
@@ -126,35 +114,26 @@ public class DERExternal
     /* (non-Javadoc)
      * @see org.bouncycastle.asn1.ASN1Object#asn1Equals(org.bouncycastle.asn1.DERObject)
      */
-    boolean asn1Equals(DERObject o)
-    {
-        if (!(o instanceof DERExternal))
-        {
+    boolean asn1Equals(DERObject o) {
+        if (!(o instanceof DERExternal)) {
             return false;
         }
-        if (this == o)
-        {
+        if (this == o) {
             return true;
         }
-        DERExternal other = (DERExternal)o;
-        if (directReference != null)
-        {
-            if (other.directReference == null || !other.directReference.equals(directReference))  
-            {
+        DERExternal other = (DERExternal) o;
+        if (directReference != null) {
+            if (other.directReference == null || !other.directReference.equals(directReference)) {
                 return false;
             }
         }
-        if (indirectReference != null)
-        {
-            if (other.indirectReference == null || !other.indirectReference.equals(indirectReference))
-            {
+        if (indirectReference != null) {
+            if (other.indirectReference == null || !other.indirectReference.equals(indirectReference)) {
                 return false;
             }
         }
-        if (dataValueDescriptor != null)
-        {
-            if (other.dataValueDescriptor == null || !other.dataValueDescriptor.equals(dataValueDescriptor))
-            {
+        if (dataValueDescriptor != null) {
+            if (other.dataValueDescriptor == null || !other.dataValueDescriptor.equals(dataValueDescriptor)) {
                 return false;
             }
         }
@@ -163,20 +142,38 @@ public class DERExternal
 
     /**
      * Returns the data value descriptor
+     *
      * @return The descriptor
      */
-    public ASN1Object getDataValueDescriptor()
-    {
+    public ASN1Object getDataValueDescriptor() {
         return dataValueDescriptor;
     }
 
     /**
+     * Sets the data value descriptor
+     *
+     * @param dataValueDescriptor The descriptor
+     */
+    private void setDataValueDescriptor(ASN1Object dataValueDescriptor) {
+        this.dataValueDescriptor = dataValueDescriptor;
+    }
+
+    /**
      * Returns the direct reference of the external element
+     *
      * @return The reference
      */
-    public DERObjectIdentifier getDirectReference()
-    {
+    public DERObjectIdentifier getDirectReference() {
         return directReference;
+    }
+
+    /**
+     * Sets the direct reference of the external element
+     *
+     * @param directReferemce The reference
+     */
+    private void setDirectReference(DERObjectIdentifier directReferemce) {
+        this.directReference = directReferemce;
     }
 
     /**
@@ -186,49 +183,13 @@ public class DERExternal
      * <li><code>1</code> OCTET STRING</li>
      * <li><code>2</code> BIT STRING</li>
      * </ul>
+     *
      * @return The encoding
      */
-    public int getEncoding()
-    {
+    public int getEncoding() {
         return encoding;
     }
-    
-    /**
-     * Returns the content of this element
-     * @return The content
-     */
-    public DERObject getExternalContent()
-    {
-        return externalContent;
-    }
-    
-    /**
-     * Returns the indirect reference of this element
-     * @return The reference
-     */
-    public DERInteger getIndirectReference()
-    {
-        return indirectReference;
-    }
-    
-    /**
-     * Sets the data value descriptor
-     * @param dataValueDescriptor The descriptor
-     */
-    private void setDataValueDescriptor(ASN1Object dataValueDescriptor)
-    {
-        this.dataValueDescriptor = dataValueDescriptor;
-    }
 
-    /**
-     * Sets the direct reference of the external element
-     * @param directReferemce The reference
-     */
-    private void setDirectReference(DERObjectIdentifier directReferemce)
-    {
-        this.directReference = directReferemce;
-    }
-    
     /**
      * Sets the encoding of the content. Valid values are
      * <ul>
@@ -236,32 +197,49 @@ public class DERExternal
      * <li><code>1</code> OCTET STRING</li>
      * <li><code>2</code> BIT STRING</li>
      * </ul>
+     *
      * @param encoding The encoding
      */
-    private void setEncoding(int encoding)
-    {
-        if (encoding < 0 || encoding > 2)
-        {
+    private void setEncoding(int encoding) {
+        if (encoding < 0 || encoding > 2) {
             throw new IllegalArgumentException("invalid encoding value: " + encoding);
         }
         this.encoding = encoding;
     }
-    
+
+    /**
+     * Returns the content of this element
+     *
+     * @return The content
+     */
+    public DERObject getExternalContent() {
+        return externalContent;
+    }
+
     /**
      * Sets the content of this element
+     *
      * @param externalContent The content
      */
-    private void setExternalContent(DERObject externalContent)
-    {
+    private void setExternalContent(DERObject externalContent) {
         this.externalContent = externalContent;
     }
-    
+
+    /**
+     * Returns the indirect reference of this element
+     *
+     * @return The reference
+     */
+    public DERInteger getIndirectReference() {
+        return indirectReference;
+    }
+
     /**
      * Sets the indirect reference of this element
+     *
      * @param indirectReference The reference
      */
-    private void setIndirectReference(DERInteger indirectReference)
-    {
+    private void setIndirectReference(DERInteger indirectReference) {
         this.indirectReference = indirectReference;
     }
 }

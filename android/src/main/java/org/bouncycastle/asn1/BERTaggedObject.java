@@ -9,30 +9,21 @@ import java.util.Enumeration;
  * rules (as with sequences).
  */
 @SuppressWarnings("unchecked")
-public class BERTaggedObject
-    extends DERTaggedObject
-{
+public class BERTaggedObject extends DERTaggedObject {
     /**
      * @param tagNo the tag number for this object.
-     * @param obj the tagged object.
+     * @param obj   the tagged object.
      */
-    public BERTaggedObject(
-        int             tagNo,
-        DEREncodable    obj)
-    {
+    public BERTaggedObject(int tagNo, DEREncodable obj) {
         super(tagNo, obj);
     }
 
     /**
      * @param explicit true if an explicitly tagged object.
-     * @param tagNo the tag number for this object.
-     * @param obj the tagged object.
+     * @param tagNo    the tag number for this object.
+     * @param obj      the tagged object.
      */
-    public BERTaggedObject(
-        boolean         explicit,
-        int             tagNo,
-        DEREncodable    obj)
-    {
+    public BERTaggedObject(boolean explicit, int tagNo, DEREncodable obj) {
         super(explicit, tagNo, obj);
     }
 
@@ -40,68 +31,45 @@ public class BERTaggedObject
      * create an implicitly tagged object that contains a zero
      * length sequence.
      */
-    public BERTaggedObject(
-        int             tagNo)
-    {
+    public BERTaggedObject(int tagNo) {
         super(false, tagNo, new BERSequence());
     }
 
-    void encode(
-        DEROutputStream  out)
-        throws IOException
-    {
-        if (out instanceof ASN1OutputStream || out instanceof BEROutputStream)
-        {
+    void encode(DEROutputStream out) throws IOException {
+        if (out instanceof ASN1OutputStream || out instanceof BEROutputStream) {
             out.writeTag(CONSTRUCTED | TAGGED, tagNo);
             out.write(0x80);
 
-            if (!empty)
-            {
-                if (!explicit)
-                {
+            if (!empty) {
+                if (!explicit) {
                     Enumeration e;
-                    if (obj instanceof ASN1OctetString)
-                    {
-                        if (obj instanceof BERConstructedOctetString)
-                        {
-                            e = ((BERConstructedOctetString)obj).getObjects();
-                        }
-                        else
-                        {
-                            ASN1OctetString             octs = (ASN1OctetString)obj;
-                            BERConstructedOctetString   berO = new BERConstructedOctetString(octs.getOctets());
+                    if (obj instanceof ASN1OctetString) {
+                        if (obj instanceof BERConstructedOctetString) {
+                            e = ((BERConstructedOctetString) obj).getObjects();
+                        } else {
+                            ASN1OctetString octs = (ASN1OctetString) obj;
+                            BERConstructedOctetString berO = new BERConstructedOctetString(octs.getOctets());
                             e = berO.getObjects();
                         }
-                    }
-                    else if (obj instanceof ASN1Sequence)
-                    {
-                        e = ((ASN1Sequence)obj).getObjects();
-                    }
-                    else if (obj instanceof ASN1Set)
-                    {
-                        e = ((ASN1Set)obj).getObjects();
-                    }
-                    else
-                    {
+                    } else if (obj instanceof ASN1Sequence) {
+                        e = ((ASN1Sequence) obj).getObjects();
+                    } else if (obj instanceof ASN1Set) {
+                        e = ((ASN1Set) obj).getObjects();
+                    } else {
                         throw new RuntimeException("not implemented: " + obj.getClass().getName());
                     }
 
-                    while (e.hasMoreElements())
-                    {
+                    while (e.hasMoreElements()) {
                         out.writeObject(e.nextElement());
                     }
-                }
-                else
-                {
+                } else {
                     out.writeObject(obj);
                 }
             }
 
             out.write(0x00);
             out.write(0x00);
-        }
-        else
-        {
+        } else {
             super.encode(out);
         }
     }

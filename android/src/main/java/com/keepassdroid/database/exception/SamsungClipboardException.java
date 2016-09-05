@@ -20,18 +20,18 @@
 package com.keepassdroid.database.exception;
 
 public class SamsungClipboardException extends Exception {
-	
-	public SamsungClipboardException(String message) {
-		super(message);
-	}
-	
-	public SamsungClipboardException(Exception e) {
-		super(e);
-	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3168837280393843509L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3168837280393843509L;
+
+    public SamsungClipboardException(String message) {
+        super(message);
+    }
+
+    public SamsungClipboardException(Exception e) {
+        super(e);
+    }
 
 }

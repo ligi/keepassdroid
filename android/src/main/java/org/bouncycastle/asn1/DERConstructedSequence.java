@@ -8,17 +8,12 @@ import java.util.Enumeration;
  * @deprecated use DERSequence.
  */
 @SuppressWarnings("unchecked")
-public class DERConstructedSequence
-    extends ASN1Sequence
-{
-    public void addObject(
-        DEREncodable obj)
-    {
+public class DERConstructedSequence extends ASN1Sequence {
+    public void addObject(DEREncodable obj) {
         super.addObject(obj);
     }
 
-    public int getSize()
-    {
+    public int getSize() {
         return size();
     }
 
@@ -30,24 +25,20 @@ public class DERConstructedSequence
      * ASN.1 descriptions given. Rather than just outputing SEQUENCE,
      * we also have to specify CONSTRUCTED, and the objects length.
      */
-    void encode(
-        DEROutputStream out)
-        throws IOException
-    {
-        ByteArrayOutputStream   bOut = new ByteArrayOutputStream();
-        DEROutputStream         dOut = new DEROutputStream(bOut);
-        Enumeration             e = this.getObjects();
+    void encode(DEROutputStream out) throws IOException {
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+        DEROutputStream dOut = new DEROutputStream(bOut);
+        Enumeration e = this.getObjects();
 
-        while (e.hasMoreElements())
-        {
-            Object    obj = e.nextElement();
+        while (e.hasMoreElements()) {
+            Object obj = e.nextElement();
 
             dOut.writeObject(obj);
         }
 
         dOut.close();
 
-        byte[]  bytes = bOut.toByteArray();
+        byte[] bytes = bOut.toByteArray();
 
         out.writeEncoded(SEQUENCE | CONSTRUCTED, bytes);
     }

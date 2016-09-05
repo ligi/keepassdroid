@@ -23,162 +23,168 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-/** Little endian version of the DataInputStream
- * @author bpellin
+/**
+ * Little endian version of the DataInputStream
  *
+ * @author bpellin
  */
 public class LEDataInputStream extends InputStream {
 
-	public static final long INT_TO_LONG_MASK = 0xffffffffL;
-	
-	private InputStream baseStream;
+    public static final long INT_TO_LONG_MASK = 0xffffffffL;
 
-	public LEDataInputStream(InputStream in) {
-		baseStream = in;
-	}
-	
-	/** Read a 32-bit value and return it as a long, so that it can
-	 *  be interpreted as an unsigned integer.
-	 * @return
-	 * @throws IOException
-	 */
-	public long readUInt() throws IOException {
-		return readUInt(baseStream);
-	}
-	
-	public int readInt() throws IOException {
-		return readInt(baseStream);
-	}
-	
-	public long readLong() throws IOException {
-		byte[] buf = readBytes(8);
-		
-		return readLong(buf, 0);
-	}
-	
-	@Override
-	public int available() throws IOException {
-		return baseStream.available();
-	}
+    private InputStream baseStream;
 
-	@Override
-	public void close() throws IOException {
-		baseStream.close();
-	}
+    public LEDataInputStream(InputStream in) {
+        baseStream = in;
+    }
 
-	@Override
-	public void mark(int readlimit) {
-		baseStream.mark(readlimit);
-	}
+    public static int readUShort(InputStream is) throws IOException {
+        byte[] buf = new byte[2];
 
-	@Override
-	public boolean markSupported() {
-		return baseStream.markSupported();
-	}
+        is.read(buf, 0, 2);
 
-	@Override
-	public int read() throws IOException {
-		return baseStream.read();
-	}
+        return readUShort(buf, 0);
+    }
 
-	@Override
-	public int read(byte[] b, int offset, int length) throws IOException {
-		return baseStream.read(b, offset, length);
-	}
+    /**
+     * Read an unsigned 16-bit value.
+     *
+     * @param buf
+     * @param offset
+     * @return
+     */
+    public static int readUShort(byte[] buf, int offset) {
+        return (buf[offset + 0] & 0xFF) + ((buf[offset + 1] & 0xFF) << 8);
+    }
 
-	@Override
-	public int read(byte[] b) throws IOException {
-		// TODO Auto-generated method stub
-		return super.read(b);
-	}
+    public static long readLong(byte buf[], int offset) {
+        return ((long) buf[offset + 0] & 0xFF) +
+               (((long) buf[offset + 1] & 0xFF) << 8) +
+               (((long) buf[offset + 2] & 0xFF) << 16) +
+               (((long) buf[offset + 3] & 0xFF) << 24) +
+               (((long) buf[offset + 4] & 0xFF) << 32) +
+               (((long) buf[offset + 5] & 0xFF) << 40) +
+               (((long) buf[offset + 6] & 0xFF) << 48) +
+               (((long) buf[offset + 7] & 0xFF) << 56);
+    }
 
-	@Override
-	public synchronized void reset() throws IOException {
-		baseStream.reset();
-	}
+    public static long readUInt(byte buf[], int offset) {
+        return (readInt(buf, offset) & INT_TO_LONG_MASK);
+    }
 
-	@Override
-	public long skip(long n) throws IOException {
-		return baseStream.skip(n);
-	}
+    public static int readInt(InputStream is) throws IOException {
+        byte[] buf = new byte[4];
 
-	public byte[] readBytes(int length) throws IOException {
-		byte[] buf = new byte[length];
-		
-		int count = 0;
-		while ( count < length ) {
-			int read = read(buf, count, length - count);
-			
-			// Reached end
-			if ( read == -1 ) {
-				// Stop early
-				byte[] early = new byte[count];
-				System.arraycopy(buf, 0, early, 0, count);
-				return early;
-			}
-			
-			count += read;
-		}
-		
-		return buf;
-	}
+        is.read(buf, 0, 4);
 
-	public static int readUShort(InputStream is) throws IOException {
-		  byte[] buf = new byte[2];
-		  
-		  is.read(buf, 0, 2);
-		  
-		  return readUShort(buf, 0); 
-	  }
-	
-	public int readUShort() throws IOException {
-		return readUShort(baseStream);
-	}
+        return readInt(buf, 0);
+    }
 
-	/**
-	   * Read an unsigned 16-bit value.
-	   * 
-	   * @param buf
-	   * @param offset
-	   * @return
-	   */
-	  public static int readUShort( byte[] buf, int offset ) {
-	    return (buf[offset + 0] & 0xFF) + ((buf[offset + 1] & 0xFF) << 8);
-	  }
+    public static long readUInt(InputStream is) throws IOException {
+        return (readInt(is) & INT_TO_LONG_MASK);
+    }
 
-	public static long readLong( byte buf[], int offset ) {
-		return ((long)buf[offset + 0] & 0xFF) + (((long)buf[offset + 1] & 0xFF) << 8) 
-		+ (((long)buf[offset + 2] & 0xFF) << 16) + (((long)buf[offset + 3] & 0xFF) << 24) 
-		+ (((long)buf[offset + 4] & 0xFF) << 32) + (((long)buf[offset + 5] & 0xFF) << 40) 
-		+ (((long)buf[offset + 6] & 0xFF) << 48) + (((long)buf[offset + 7] & 0xFF) << 56);
-	}
+    /**
+     * Read a 32-bit value.
+     *
+     * @param buf
+     * @param offset
+     * @return
+     */
+    public static int readInt(byte buf[], int offset) {
+        return (buf[offset + 0] & 0xFF) + ((buf[offset + 1] & 0xFF) << 8) + ((buf[offset + 2] & 0xFF) << 16) + ((buf[offset + 3] & 0xFF) << 24);
+    }
 
-	public static long readUInt( byte buf[], int offset ) {
-		  return (readInt(buf, offset) & INT_TO_LONG_MASK);
-	  }
+    /**
+     * Read a 32-bit value and return it as a long, so that it can
+     * be interpreted as an unsigned integer.
+     *
+     * @return
+     * @throws IOException
+     */
+    public long readUInt() throws IOException {
+        return readUInt(baseStream);
+    }
 
-	public static int readInt(InputStream is) throws IOException {
-		  byte[] buf = new byte[4];
-	
-		  is.read(buf, 0, 4);
-		  
-		  return readInt(buf, 0);
-	  }
+    public int readInt() throws IOException {
+        return readInt(baseStream);
+    }
 
-	public static long readUInt(InputStream is) throws IOException {
-		  return (readInt(is) & INT_TO_LONG_MASK);
-	  }
+    public long readLong() throws IOException {
+        byte[] buf = readBytes(8);
 
-	/**
-	   * Read a 32-bit value.
-	   * 
-	   * @param buf
-	   * @param offset
-	   * @return
-	   */
-	  public static int readInt( byte buf[], int offset ) {
-	    return (buf[offset + 0] & 0xFF) + ((buf[offset + 1] & 0xFF) << 8) + ((buf[offset + 2] & 0xFF) << 16)
-	           + ((buf[offset + 3] & 0xFF) << 24);
-	  }
+        return readLong(buf, 0);
+    }
+
+    @Override
+    public int available() throws IOException {
+        return baseStream.available();
+    }
+
+    @Override
+    public void close() throws IOException {
+        baseStream.close();
+    }
+
+    @Override
+    public void mark(int readlimit) {
+        baseStream.mark(readlimit);
+    }
+
+    @Override
+    public boolean markSupported() {
+        return baseStream.markSupported();
+    }
+
+    @Override
+    public int read() throws IOException {
+        return baseStream.read();
+    }
+
+    @Override
+    public int read(byte[] b, int offset, int length) throws IOException {
+        return baseStream.read(b, offset, length);
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+        // TODO Auto-generated method stub
+        return super.read(b);
+    }
+
+    @Override
+    public synchronized void reset() throws IOException {
+        baseStream.reset();
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        return baseStream.skip(n);
+    }
+
+    public byte[] readBytes(int length) throws IOException {
+        byte[] buf = new byte[length];
+
+        int count = 0;
+        while (count < length) {
+            int read = read(buf, count, length - count);
+
+            // Reached end
+            if (read == -1) {
+                // Stop early
+                byte[] early = new byte[count];
+                System.arraycopy(buf, 0, early, 0, count);
+                return early;
+            }
+
+            count += read;
+        }
+
+        return buf;
+    }
+
+    public int readUShort() throws IOException {
+        return readUShort(baseStream);
+    }
 
 }

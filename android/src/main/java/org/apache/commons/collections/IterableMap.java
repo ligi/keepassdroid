@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * Defines a map that can be iterated directly without needing to create an entry set.
- * <p>
+ * <p/>
  * A map iterator is an efficient way of iterating over maps.
  * There is no need to access the entry set or cast to Map Entry objects.
  * <pre>
@@ -32,17 +32,16 @@ import java.util.Map;
  *   it.setValue("newValue");
  * }
  * </pre>
- * 
- * @since Commons Collections 3.0
- * @version $Revision: 646777 $ $Date: 2008-04-10 13:33:15 +0100 (Thu, 10 Apr 2008) $
  *
  * @author Stephen Colebourne
+ * @version $Revision: 646777 $ $Date: 2008-04-10 13:33:15 +0100 (Thu, 10 Apr 2008) $
+ * @since Commons Collections 3.0
  */
 public interface IterableMap extends Map {
 
     /**
      * Obtains a <code>MapIterator</code> over the map.
-     * <p>
+     * <p/>
      * A map iterator is an efficient way of iterating over maps.
      * There is no need to access the entry set or cast to Map Entry objects.
      * <pre>
@@ -54,9 +53,9 @@ public interface IterableMap extends Map {
      *   it.setValue("newValue");
      * }
      * </pre>
-     * 
+     *
      * @return a map iterator
      */
     MapIterator mapIterator();
-    
+
 }

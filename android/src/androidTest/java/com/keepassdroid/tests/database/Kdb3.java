@@ -28,29 +28,29 @@ import java.io.File;
 import java.io.InputStream;
 
 public class Kdb3 extends InstrumentationTestCase {
-	
-	private void testKeyfile(String dbAsset, String keyAsset, String password) throws Exception {
-		Context ctx = getInstrumentation().getContext();
 
-		File keyPath = new File(getInstrumentation().getTargetContext().getFilesDir() , "key");
-		
-		TestUtil.extractKey(ctx, keyAsset, keyPath);
-		
-		AssetManager am = getInstrumentation().getContext().getAssets();
-		InputStream is = am.open(dbAsset, AssetManager.ACCESS_STREAMING);
-		
-		ImporterV3 importer = new ImporterV3();
-		importer.openDatabase(is, password, TestUtil.getKeyFileInputStream(ctx, keyPath.getAbsolutePath()));
-		
-		is.close();
-	}
-	
-	public void testXMLKeyFile() throws Exception {
-		testKeyfile("kdb_with_xml_keyfile.kdb", "keyfile.key", "12345");
-	}
-	
-	public void testBinary64KeyFile() throws Exception {
-		testKeyfile("binary-key.kdb", "binary.key", "12345");
-	}
+    private void testKeyfile(String dbAsset, String keyAsset, String password) throws Exception {
+        Context ctx = getInstrumentation().getContext();
+
+        File keyPath = new File(getInstrumentation().getTargetContext().getFilesDir(), "key");
+
+        TestUtil.extractKey(ctx, keyAsset, keyPath);
+
+        AssetManager am = getInstrumentation().getContext().getAssets();
+        InputStream is = am.open(dbAsset, AssetManager.ACCESS_STREAMING);
+
+        ImporterV3 importer = new ImporterV3();
+        importer.openDatabase(is, password, TestUtil.getKeyFileInputStream(ctx, keyPath.getAbsolutePath()));
+
+        is.close();
+    }
+
+    public void testXMLKeyFile() throws Exception {
+        testKeyfile("kdb_with_xml_keyfile.kdb", "keyfile.key", "12345");
+    }
+
+    public void testBinary64KeyFile() throws Exception {
+        testKeyfile("binary-key.kdb", "binary.key", "12345");
+    }
 
 }

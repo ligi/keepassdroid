@@ -23,14 +23,14 @@ import java.security.Provider;
 
 public final class AESProvider extends Provider {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3846349284296062658L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3846349284296062658L;
 
-	public AESProvider() {
-		super("AESProvider", 1.0, "");
-		put("Cipher.AES",com.keepassdroid.crypto.NativeAESCipherSpi.class.getName());
-	}
+    public AESProvider() {
+        super("AESProvider", 1.0, "");
+        put("Cipher.AES", com.keepassdroid.crypto.NativeAESCipherSpi.class.getName());
+    }
 
 }

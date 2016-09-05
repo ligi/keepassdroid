@@ -20,41 +20,35 @@
 package com.keepassdroid.database;
 
 public class PwIconStandard extends PwIcon {
-	public final int iconId;
-	
-	public static PwIconStandard FIRST = new PwIconStandard(1);
-	
-	public static final int TRASH_BIN = 43;
-	public static final int FOLDER = 48;
-	
-	public PwIconStandard(int iconId) {
-		this.iconId = iconId;
-	}
+    public static final int TRASH_BIN = 43;
+    public static final int FOLDER = 48;
+    public static PwIconStandard FIRST = new PwIconStandard(1);
+    public final int iconId;
 
-	@Override
-	public boolean isMetaStreamIcon() {
-		return iconId == 0;
-	}
+    public PwIconStandard(int iconId) {
+        this.iconId = iconId;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + iconId;
-		return result;
-	}
+    @Override
+    public boolean isMetaStreamIcon() {
+        return iconId == 0;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PwIconStandard other = (PwIconStandard) obj;
-		if (iconId != other.iconId)
-			return false;
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + iconId;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        PwIconStandard other = (PwIconStandard) obj;
+        if (iconId != other.iconId) return false;
+        return true;
+    }
 }

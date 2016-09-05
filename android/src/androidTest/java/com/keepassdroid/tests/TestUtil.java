@@ -30,33 +30,33 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 public class TestUtil {
-	
-	public static void extractKey(Context ctx, String asset, File target) throws Exception {
-		
-		InputStream key = ctx.getAssets().open(asset, AssetManager.ACCESS_STREAMING);
-		
-		FileOutputStream keyFile = new FileOutputStream(target);
-		while (true) {
-			byte[] buf = new byte[1024];
-			int read = key.read(buf);
-			if ( read == -1 ) {
-				break;
-			} else {
-				keyFile.write(buf, 0, read);
-			}
-		}
-		
-		keyFile.close();
 
-	}
+    public static void extractKey(Context ctx, String asset, File target) throws Exception {
 
-	public static InputStream getKeyFileInputStream(Context ctx, String keyfile) throws FileNotFoundException {
-		InputStream keyIs = null;
-		if (!EmptyUtils.isNullOrEmpty(keyfile)) {
-			Uri uri = UriUtil.parseDefaultFile(keyfile);
-			keyIs = UriUtil.getUriInputStream(ctx, uri);
-		}
+        InputStream key = ctx.getAssets().open(asset, AssetManager.ACCESS_STREAMING);
 
-		return keyIs;
-	}
+        FileOutputStream keyFile = new FileOutputStream(target);
+        while (true) {
+            byte[] buf = new byte[1024];
+            int read = key.read(buf);
+            if (read == -1) {
+                break;
+            } else {
+                keyFile.write(buf, 0, read);
+            }
+        }
+
+        keyFile.close();
+
+    }
+
+    public static InputStream getKeyFileInputStream(Context ctx, String keyfile) throws FileNotFoundException {
+        InputStream keyIs = null;
+        if (!EmptyUtils.isNullOrEmpty(keyfile)) {
+            Uri uri = UriUtil.parseDefaultFile(keyfile);
+            keyIs = UriUtil.getUriInputStream(ctx, uri);
+        }
+
+        return keyIs;
+    }
 }

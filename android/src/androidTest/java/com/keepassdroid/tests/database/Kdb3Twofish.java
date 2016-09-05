@@ -28,20 +28,20 @@ import com.keepassdroid.database.load.ImporterV3;
 import java.io.InputStream;
 
 public class Kdb3Twofish extends InstrumentationTestCase {
-	public void testReadTwofish() throws Exception {
-		Context ctx = getInstrumentation().getContext();
-		
-		AssetManager am = ctx.getAssets();
-		InputStream is = am.open("twofish.kdb", AssetManager.ACCESS_STREAMING);
-		
-		ImporterV3 importer = new ImporterV3();
+    public void testReadTwofish() throws Exception {
+        Context ctx = getInstrumentation().getContext();
 
-		PwDatabaseV3 db = importer.openDatabase(is, "12345", null);
-		
-		assertTrue(db.algorithm == PwEncryptionAlgorithm.Twofish);
-		
-		is.close();
+        AssetManager am = ctx.getAssets();
+        InputStream is = am.open("twofish.kdb", AssetManager.ACCESS_STREAMING);
 
-	}
+        ImporterV3 importer = new ImporterV3();
+
+        PwDatabaseV3 db = importer.openDatabase(is, "12345", null);
+
+        assertTrue(db.algorithm == PwEncryptionAlgorithm.Twofish);
+
+        is.close();
+
+    }
 
 }

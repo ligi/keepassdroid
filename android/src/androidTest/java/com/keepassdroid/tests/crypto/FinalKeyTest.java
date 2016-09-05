@@ -19,48 +19,45 @@
 */
 package com.keepassdroid.tests.crypto;
 
-import static org.junit.Assert.assertArrayEquals;
-
-import java.io.IOException;
-import java.util.Random;
-
-import junit.framework.TestCase;
-
 import com.keepassdroid.crypto.finalkey.AndroidFinalKey;
 import com.keepassdroid.crypto.finalkey.NativeFinalKey;
+import java.io.IOException;
+import java.util.Random;
+import junit.framework.TestCase;
+import static org.junit.Assert.assertArrayEquals;
 
 public class FinalKeyTest extends TestCase {
-	private Random mRand;
-	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		mRand = new Random();
-	}
-	
-	public void testNativeAndroid() throws IOException {
-		// Test both an old and an even number to test my flip variable
-		testNativeFinalKey(5);
-		testNativeFinalKey(6);
-	}
-	
-	private void testNativeFinalKey(int rounds) throws IOException {
-		byte[] seed = new byte[32];
-		byte[] key = new byte[32];
-		byte[] nativeKey;
-		byte[] androidKey;
-		
-		mRand.nextBytes(seed);
-		mRand.nextBytes(key);
-		
-		AndroidFinalKey aKey = new AndroidFinalKey();
-		androidKey = aKey.transformMasterKey(seed, key, rounds);
-		
-		NativeFinalKey nKey = new NativeFinalKey();
-		nativeKey = nKey.transformMasterKey(seed, key, rounds);
-		
-		assertArrayEquals("Does not match", androidKey, nativeKey);
-		
-	}
+    private Random mRand;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        mRand = new Random();
+    }
+
+    public void testNativeAndroid() throws IOException {
+        // Test both an old and an even number to test my flip variable
+        testNativeFinalKey(5);
+        testNativeFinalKey(6);
+    }
+
+    private void testNativeFinalKey(int rounds) throws IOException {
+        byte[] seed = new byte[32];
+        byte[] key = new byte[32];
+        byte[] nativeKey;
+        byte[] androidKey;
+
+        mRand.nextBytes(seed);
+        mRand.nextBytes(key);
+
+        AndroidFinalKey aKey = new AndroidFinalKey();
+        androidKey = aKey.transformMasterKey(seed, key, rounds);
+
+        NativeFinalKey nKey = new NativeFinalKey();
+        nativeKey = nKey.transformMasterKey(seed, key, rounds);
+
+        assertArrayEquals("Does not match", androidKey, nativeKey);
+
+    }
 }

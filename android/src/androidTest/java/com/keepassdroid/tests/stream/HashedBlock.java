@@ -19,92 +19,89 @@
 */
 package com.keepassdroid.tests.stream;
 
-import static org.junit.Assert.assertArrayEquals;
-
+import com.keepassdroid.stream.HashedBlockInputStream;
+import com.keepassdroid.stream.HashedBlockOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Random;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
 import junit.framework.TestCase;
-
-import com.keepassdroid.stream.HashedBlockInputStream;
-import com.keepassdroid.stream.HashedBlockOutputStream;
+import static org.junit.Assert.assertArrayEquals;
 
 public class HashedBlock extends TestCase {
-	
-	private static Random rand = new Random();
 
-	public void testBlockAligned() throws IOException {
-		testSize(1024, 1024);
-	}
-	
-	public void testOffset() throws IOException {
-		testSize(1500, 1024);
-	}
-	
-	private void testSize(int blockSize, int bufferSize) throws IOException {
-		byte[] orig = new byte[blockSize];
-		
-		rand.nextBytes(orig);
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		HashedBlockOutputStream output = new HashedBlockOutputStream(bos, bufferSize);
-		output.write(orig);
-		output.close();
-		
-		byte[] encoded = bos.toByteArray();
-		
-		ByteArrayInputStream bis = new ByteArrayInputStream(encoded);
-		HashedBlockInputStream input = new HashedBlockInputStream(bis);
+    private static Random rand = new Random();
 
-		ByteArrayOutputStream decoded = new ByteArrayOutputStream();
-		while ( true ) {
-			byte[] buf = new byte[1024];
-			int read = input.read(buf);
-			if ( read == -1 ) {
-				break;
-			}
-			
-			decoded.write(buf, 0, read);
-		}
-		
-		byte[] out = decoded.toByteArray();
-		
-		assertArrayEquals(orig, out);
-		
-	}
-	
-	public void testGZIPStream() throws IOException {
-		final int testLength = 32000;
-		
-		byte[] orig = new byte[testLength];
-		rand.nextBytes(orig);
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		HashedBlockOutputStream hos = new HashedBlockOutputStream(bos);
-		GZIPOutputStream zos = new GZIPOutputStream(hos);
-		
-		zos.write(orig);
-		zos.close();
-		
-		byte[] compressed = bos.toByteArray();
-		ByteArrayInputStream bis = new ByteArrayInputStream(compressed);
-		HashedBlockInputStream his = new HashedBlockInputStream(bis);
-		GZIPInputStream zis = new GZIPInputStream(his);
-		
-		byte[] uncompressed = new byte[testLength];
-		
-		int read = 0;
-		while (read != -1 && testLength - read > 0) {
-			read += zis.read(uncompressed, read, testLength - read);
-			
-		}
-		
-		assertArrayEquals("Output not equal to input", orig, uncompressed);
-		
-		
-	}
+    public void testBlockAligned() throws IOException {
+        testSize(1024, 1024);
+    }
+
+    public void testOffset() throws IOException {
+        testSize(1500, 1024);
+    }
+
+    private void testSize(int blockSize, int bufferSize) throws IOException {
+        byte[] orig = new byte[blockSize];
+
+        rand.nextBytes(orig);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        HashedBlockOutputStream output = new HashedBlockOutputStream(bos, bufferSize);
+        output.write(orig);
+        output.close();
+
+        byte[] encoded = bos.toByteArray();
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(encoded);
+        HashedBlockInputStream input = new HashedBlockInputStream(bis);
+
+        ByteArrayOutputStream decoded = new ByteArrayOutputStream();
+        while (true) {
+            byte[] buf = new byte[1024];
+            int read = input.read(buf);
+            if (read == -1) {
+                break;
+            }
+
+            decoded.write(buf, 0, read);
+        }
+
+        byte[] out = decoded.toByteArray();
+
+        assertArrayEquals(orig, out);
+
+    }
+
+    public void testGZIPStream() throws IOException {
+        final int testLength = 32000;
+
+        byte[] orig = new byte[testLength];
+        rand.nextBytes(orig);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        HashedBlockOutputStream hos = new HashedBlockOutputStream(bos);
+        GZIPOutputStream zos = new GZIPOutputStream(hos);
+
+        zos.write(orig);
+        zos.close();
+
+        byte[] compressed = bos.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(compressed);
+        HashedBlockInputStream his = new HashedBlockInputStream(bis);
+        GZIPInputStream zis = new GZIPInputStream(his);
+
+        byte[] uncompressed = new byte[testLength];
+
+        int read = 0;
+        while (read != -1 && testLength - read > 0) {
+            read += zis.read(uncompressed, read, testLength - read);
+
+        }
+
+        assertArrayEquals("Output not equal to input", orig, uncompressed);
+
+
+    }
 }

@@ -19,35 +19,34 @@
  */
 package com.keepassdroid.compat;
 
-import java.lang.reflect.Constructor;
-
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import java.lang.reflect.Constructor;
 
 // This compatiblity hack can go away when support for Android 1.5 api level 3 is dropped
 public class BitmapDrawableCompat {
-	private static Constructor<BitmapDrawable> constResBitmap;
-	
-	static {
-		try {
-			constResBitmap = BitmapDrawable.class.getConstructor(Resources.class, Bitmap.class);
-			// This constructor is support in this api version
-		} catch (Exception e) {
-			// This constructor is not supported
-		}
-	}
-	
-	public static BitmapDrawable getBitmapDrawable(Resources res, Bitmap bitmap) {
-		if (constResBitmap != null) {
-			try {
-				return constResBitmap.newInstance(res, bitmap);
-			} catch (Exception e) {
-				// Do nothing, fall through to the safe constructor
-			}
-		}
-		
-		return new BitmapDrawable(bitmap);
-	}
+    private static Constructor<BitmapDrawable> constResBitmap;
+
+    static {
+        try {
+            constResBitmap = BitmapDrawable.class.getConstructor(Resources.class, Bitmap.class);
+            // This constructor is support in this api version
+        } catch (Exception e) {
+            // This constructor is not supported
+        }
+    }
+
+    public static BitmapDrawable getBitmapDrawable(Resources res, Bitmap bitmap) {
+        if (constResBitmap != null) {
+            try {
+                return constResBitmap.newInstance(res, bitmap);
+            } catch (Exception e) {
+                // Do nothing, fall through to the safe constructor
+            }
+        }
+
+        return new BitmapDrawable(bitmap);
+    }
 
 }

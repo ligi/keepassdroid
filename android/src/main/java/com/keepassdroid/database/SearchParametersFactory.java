@@ -20,28 +20,26 @@
 package com.keepassdroid.database;
 
 public class SearchParametersFactory {
-	public static SearchParameters getNone(PwDatabase db) {
-		SearchParameters sp = getInstance(db);
-		sp.setupNone();
-		
-		return sp;
-	}
-	
-	public static SearchParameters getInstance(PwDatabase db) {
-		if (db instanceof PwDatabase) {
-			return new SearchParametersV4();
-		}
-		else {
-			return new SearchParameters();
-		}
-	}
-	
-	public static SearchParameters getInstance(PwGroup group) {
-		if (group instanceof PwGroupV4) {
-			return new SearchParametersV4();
-		}
-		else {
-			return new SearchParameters();
-		}
-	}
+    public static SearchParameters getNone(PwDatabase db) {
+        SearchParameters sp = getInstance(db);
+        sp.setupNone();
+
+        return sp;
+    }
+
+    public static SearchParameters getInstance(PwDatabase db) {
+        if (db instanceof PwDatabase) {
+            return new SearchParametersV4();
+        } else {
+            return new SearchParameters();
+        }
+    }
+
+    public static SearchParameters getInstance(PwGroup group) {
+        if (group instanceof PwGroupV4) {
+            return new SearchParametersV4();
+        } else {
+            return new SearchParameters();
+        }
+    }
 }

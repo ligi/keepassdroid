@@ -24,28 +24,28 @@ import java.io.OutputStream;
 
 public class NullOutputStream extends OutputStream {
 
-	@Override
-	public void close() throws IOException {
-		super.close();
-	}
+    @Override
+    public void close() throws IOException {
+        super.close();
+    }
 
-	@Override
-	public void flush() throws IOException {
-		super.flush();
-	}
+    @Override
+    public void flush() throws IOException {
+        super.flush();
+    }
 
-	@Override
-	public void write(byte[] buffer, int offset, int count) throws IOException {
-		super.write(buffer, offset, count);
-	}
+    @Override
+    public void write(byte[] buffer, int offset, int count) throws IOException {
+        super.write(buffer, offset, count);
+    }
 
-	@Override
-	public void write(byte[] buffer) throws IOException {
-		super.write(buffer);
-	}
+    @Override
+    public void write(byte[] buffer) throws IOException {
+        super.write(buffer);
+    }
 
-	@Override
-	public void write(int oneByte) throws IOException {
-	}
+    @Override
+    public void write(int oneByte) throws IOException {
+    }
 
 }

@@ -1,7 +1,6 @@
 package org.bouncycastle.crypto;
 
-public interface Wrapper
-{
+public interface Wrapper {
     public void init(boolean forWrapping, CipherParameters param);
 
     /**
@@ -13,6 +12,5 @@ public interface Wrapper
 
     public byte[] wrap(byte[] in, int inOff, int inLen);
 
-    public byte[] unwrap(byte[] in, int inOff, int inLen)
-        throws InvalidCipherTextException;
+    public byte[] unwrap(byte[] in, int inOff, int inLen) throws InvalidCipherTextException;
 }

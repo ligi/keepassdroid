@@ -22,44 +22,43 @@ package com.keepassdroid.database.security;
 import java.util.Arrays;
 
 public class ProtectedBinary {
-	
-	public final static ProtectedBinary EMPTY = new ProtectedBinary();
-	
-	private byte[] data;
-	private boolean protect;
-	
-	public boolean isProtected() {
-		return protect;
-	}
-	
-	public int length() {
-		if (data == null) {
-			return 0;
-		}
-		
-		return data.length;
-	}
-	
-	public ProtectedBinary() {
-		this(false, new byte[0]);
-		
-	}
-	
-	public ProtectedBinary(boolean enableProtection, byte[] data) {
-		protect = enableProtection;
-		this.data = data;
-		
-	}
-	
-	
-	// TODO: replace the byte[] with something like ByteBuffer to make the return
-	// value immutable, so we don't have to worry about making deep copies
-	public byte[] getData() {
-		return data;
-	}
-	
-	public boolean equals(ProtectedBinary rhs) {
-		return (protect == rhs.protect) && Arrays.equals(data, rhs.data);
-	}
+
+    public final static ProtectedBinary EMPTY = new ProtectedBinary();
+
+    private byte[] data;
+    private boolean protect;
+
+    public ProtectedBinary() {
+        this(false, new byte[0]);
+
+    }
+
+    public ProtectedBinary(boolean enableProtection, byte[] data) {
+        protect = enableProtection;
+        this.data = data;
+
+    }
+
+    public boolean isProtected() {
+        return protect;
+    }
+
+    public int length() {
+        if (data == null) {
+            return 0;
+        }
+
+        return data.length;
+    }
+
+    // TODO: replace the byte[] with something like ByteBuffer to make the return
+    // value immutable, so we don't have to worry about making deep copies
+    public byte[] getData() {
+        return data;
+    }
+
+    public boolean equals(ProtectedBinary rhs) {
+        return (protect == rhs.protect) && Arrays.equals(data, rhs.data);
+    }
 
 }

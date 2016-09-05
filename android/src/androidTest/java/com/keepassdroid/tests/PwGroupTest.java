@@ -26,18 +26,18 @@ import com.keepassdroid.tests.database.TestData;
 
 public class PwGroupTest extends InstrumentationTestCase {
 
-	PwGroupV3 mPG;
-	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-		mPG = (PwGroupV3) TestData.GetTest1(getInstrumentation().getContext()).getGroups().get(0);
-		
-	}
-	
-	public void testGroupName() {
-		 assertTrue("Name was " + mPG.name, mPG.name.equals("Internet"));
-	}
+    PwGroupV3 mPG;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        mPG = (PwGroupV3) TestData.GetTest1(getInstrumentation().getContext()).getGroups().get(0);
+
+    }
+
+    public void testGroupName() {
+        assertTrue("Name was " + mPG.name, mPG.name.equals("Internet"));
+    }
 }
 

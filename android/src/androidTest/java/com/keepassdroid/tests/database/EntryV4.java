@@ -19,34 +19,33 @@
  */
 package com.keepassdroid.tests.database;
 
-import junit.framework.TestCase;
-
 import com.keepassdroid.database.PwDatabaseV4;
 import com.keepassdroid.database.PwEntryV4;
+import junit.framework.TestCase;
 
 public class EntryV4 extends TestCase {
 
-	public void testBackup() {
-		PwDatabaseV4 db = new PwDatabaseV4();
-		
-		db.historyMaxItems = 2;
-		
-		PwEntryV4 entry = new PwEntryV4();
-		entry.setTitle("Title1", db);
-		entry.setUsername("User1", db);
-		entry.createBackup(db);
-		
-		entry.setTitle("Title2", db);
-		entry.setUsername("User2", db);
-		entry.createBackup(db);
-		
-		entry.setTitle("Title3", db);
-		entry.setUsername("User3", db);
-		entry.createBackup(db);
-		
-		PwEntryV4 backup = entry.history.get(0);
-		assertEquals("Title2", backup.getTitle());
-		assertEquals("User2", backup.getUsername());
-	}
+    public void testBackup() {
+        PwDatabaseV4 db = new PwDatabaseV4();
+
+        db.historyMaxItems = 2;
+
+        PwEntryV4 entry = new PwEntryV4();
+        entry.setTitle("Title1", db);
+        entry.setUsername("User1", db);
+        entry.createBackup(db);
+
+        entry.setTitle("Title2", db);
+        entry.setUsername("User2", db);
+        entry.createBackup(db);
+
+        entry.setTitle("Title3", db);
+        entry.setUsername("User3", db);
+        entry.createBackup(db);
+
+        PwEntryV4 backup = entry.history.get(0);
+        assertEquals("Title2", backup.getTitle());
+        assertEquals("User2", backup.getUsername());
+    }
 
 }
