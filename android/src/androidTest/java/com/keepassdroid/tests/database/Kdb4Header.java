@@ -19,19 +19,17 @@
  */
 package com.keepassdroid.tests.database;
 
-import java.io.InputStream;
-
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.test.AndroidTestCase;
-
+import android.test.InstrumentationTestCase;
 import com.keepassdroid.crypto.CipherFactory;
 import com.keepassdroid.database.PwDatabaseV4;
 import com.keepassdroid.database.load.ImporterV4;
+import java.io.InputStream;
 
-public class Kdb4Header extends AndroidTestCase {
+public class Kdb4Header extends InstrumentationTestCase {
 	public void testReadHeader() throws Exception {
-		Context ctx = getContext();
+		Context ctx = getInstrumentation().getContext();
 		
 		AssetManager am = ctx.getAssets();
 		InputStream is = am.open("test.kdbx", AssetManager.ACCESS_STREAMING);

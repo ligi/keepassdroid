@@ -19,11 +19,10 @@
 */
 package com.keepassdroid.tests;
 
-import android.test.AndroidTestCase;
-
+import android.test.InstrumentationTestCase;
 import com.keepassdroid.tests.database.TestData;
 
-public class AccentTest extends AndroidTestCase {
+public class AccentTest extends InstrumentationTestCase {
 	
 	private static final String KEYFILE = "";
 	private static final String PASSWORD = "é";
@@ -33,7 +32,7 @@ public class AccentTest extends AndroidTestCase {
 	public void testOpen() {
 
 		try {
-			TestData.GetDb(getContext(), ASSET, PASSWORD, KEYFILE, FILENAME);
+			TestData.GetDb(getInstrumentation().getContext(), ASSET, PASSWORD, KEYFILE, FILENAME);
 		} catch (Exception e) {
 			assertTrue("Failed to open database", false);
 		}

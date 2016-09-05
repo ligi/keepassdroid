@@ -19,25 +19,21 @@
  */
 package com.keepassdroid.tests;
 
-import static org.junit.Assert.assertArrayEquals;
-
-import java.io.UnsupportedEncodingException;
-import java.util.Calendar;
-
-
-import android.test.AndroidTestCase;
-
+import android.test.InstrumentationTestCase;
 import com.keepassdroid.database.PwEntryV3;
 import com.keepassdroid.tests.database.TestData;
+import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
+import static org.junit.Assert.assertArrayEquals;
 
-public class PwEntryTestV3 extends AndroidTestCase {
+public class PwEntryTestV3 extends InstrumentationTestCase {
 	PwEntryV3 mPE;
 	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		mPE = (PwEntryV3) TestData.GetTest1(getContext()).entries.get(0);
+		mPE = (PwEntryV3) TestData.GetTest1(getInstrumentation().getContext()).entries.get(0);
 		
 	}
 	

@@ -21,22 +21,22 @@ package com.keepassdroid.tests.database;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.test.AndroidTestCase;
+import android.test.InstrumentationTestCase;
 import com.keepassdroid.database.load.ImporterV3;
 import com.keepassdroid.tests.TestUtil;
 import java.io.File;
 import java.io.InputStream;
 
-public class Kdb3 extends AndroidTestCase {
+public class Kdb3 extends InstrumentationTestCase {
 	
 	private void testKeyfile(String dbAsset, String keyAsset, String password) throws Exception {
-		Context ctx = getContext();
+		Context ctx = getInstrumentation().getContext();
 
-		File keyPath = new File(ctx.getFilesDir() , "key");
+		File keyPath = new File(getInstrumentation().getTargetContext().getFilesDir() , "key");
 		
 		TestUtil.extractKey(ctx, keyAsset, keyPath);
 		
-		AssetManager am = ctx.getAssets();
+		AssetManager am = getInstrumentation().getContext().getAssets();
 		InputStream is = am.open(dbAsset, AssetManager.ACCESS_STREAMING);
 		
 		ImporterV3 importer = new ImporterV3();

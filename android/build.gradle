@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'de.felixschulze.gradle.spoon'
+apply plugin: 'spoon'
 
 android {
 
