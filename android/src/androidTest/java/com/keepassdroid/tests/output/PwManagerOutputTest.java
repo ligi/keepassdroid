@@ -20,7 +20,7 @@
 package com.keepassdroid.tests.output;
 
 import android.content.res.AssetManager;
-import android.test.AndroidTestCase;
+import android.test.InstrumentationTestCase;
 import com.keepassdroid.database.PwDatabaseV3Debug;
 import com.keepassdroid.database.PwDbHeader;
 import com.keepassdroid.database.PwDbHeaderV3;
@@ -40,14 +40,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import static org.junit.Assert.assertArrayEquals;
  
-public class PwManagerOutputTest extends AndroidTestCase {
+public class PwManagerOutputTest extends InstrumentationTestCase {
   PwDatabaseV3Debug mPM;
   
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     
-    mPM = TestData.GetTest1(getContext());
+    mPM = TestData.GetTest1(getInstrumentation().getContext());
   }
   
   public void testPlainContent() throws IOException, PwDbOutputException {
@@ -116,7 +116,7 @@ public class PwManagerOutputTest extends AndroidTestCase {
   }
   
   public void testFullWrite() throws IOException, PwDbOutputException  {
-	AssetManager am = getContext().getAssets();
+	AssetManager am = getInstrumentation().getContext().getAssets();
 	InputStream is = am.open("test1.kdb");
 
 	// Pull file into byte array (for streaming fun)
@@ -134,7 +134,7 @@ public class PwManagerOutputTest extends AndroidTestCase {
 	pActual.output();
 	//pActual.close();
 
-	FileOutputStream fos = new FileOutputStream(new File(getContext().getFilesDir(),"/test1_out.kdb"));
+	FileOutputStream fos = new FileOutputStream(new File(getInstrumentation().getTargetContext().getFilesDir(),"/test1_out.kdb"));
 	fos.write(bActual.toByteArray());
 	fos.close();
 	assertArrayEquals("Databases do not match.", bExpected.toByteArray(), bActual.toByteArray());
